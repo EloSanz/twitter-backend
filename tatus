@@ -1,0 +1,139 @@
+[33mcommit 04981832d9d38e89ebb3db0ba3f8d5bcbe3c6074[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Nacho <72108528+Nachoferra1894@users.noreply.github.com>
+Date:   Tue Jun 25 11:46:45 2024 -0300
+
+    Update README.md
+
+[33mcommit bc2f813d2a7bb415b416c44ae3b19429a14d7793[m
+Author: Nacho <72108528+Nachoferra1894@users.noreply.github.com>
+Date:   Mon May 20 10:06:37 2024 -0300
+
+    Update README.md
+
+[33mcommit 632f50f9baa8718dc14256c738707fc5bc8ddfd1[m
+Merge: 643bbb4 33a89b1
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Tue Oct 17 17:10:16 2023 +0000
+
+    Merge branch 'fix/openss-docker-bug' into 'main'
+    
+    Change docker image to alpine
+    
+    See merge request siriussystem/training/backend-training!14
+
+[33mcommit 33a89b177d42fe047c4b94d92f2b2c4114010437[m
+Author: Nacho Ferrari <ignacio.ferrari@ing.austral.edu.ar>
+Date:   Tue Oct 17 14:06:11 2023 -0300
+
+    fix: change docker image to alpine
+
+[33mcommit 643bbb4f4666ee9c2fa3f6aaf9284d3dd8e1697b[m
+Merge: 65d20a1 0f51963
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Thu Sep 28 12:29:24 2023 +0000
+
+    Merge branch 'juanchomarengo/texts-improvements' into 'main'
+    
+    Added a comment to express-async-errors imports, to remind developers to...
+    
+    See merge request siriussystem/training/backend-training!13
+
+[33mcommit 0f51963dc6db7d9f5a5d2b84230c511f8eafc32d[m
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Thu Sep 28 12:29:12 2023 +0000
+
+    Update README.md
+
+[33mcommit ed92e933b2ff60abf175211db5b0e6498ba8cb82[m
+Author: juanchomarengo <juanmmarengo@gmail.com>
+Date:   Wed Sep 27 14:47:56 2023 -0300
+
+    Added a comment to express-async-errors imports, to remind developers to import that library in all controllers. As well updated the description of a task in the readme file
+
+[33mcommit 65d20a11e429bd1e6ed021d4464fa7bcbae2768f[m
+Merge: 5140a1c 3f943f5
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Mon Aug 28 12:35:57 2023 +0000
+
+    Merge branch 'changes' into 'main'
+    
+    Changes to twitter challenge.
+    
+    See merge request siriussystem/training/backend-training!12
+
+[33mcommit 3f943f57061773e0ef78ac2c056f1cc16c55bae3[m
+Author: JuanSeZ <juan.zanelli@ing.austral.edu.ar>
+Date:   Mon Aug 7 15:08:44 2023 -0300
+
+    Changes to twitter challenge.
+
+[33mcommit 5140a1c5d286da8eae9b88df51b78487a7860dfe[m
+Merge: 8017610 c5c15c4
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Tue Jul 4 15:46:21 2023 +0000
+
+    Merge branch 'fixes' into 'main'
+    
+    Fixes for twitter challenge
+    
+    See merge request siriussystem/training/backend-training!11
+
+[33mcommit c5c15c45db04272f81462087743f551825f25530[m
+Author: Matias Bregoli <matiasbregoli@sirius.com.ar>
+Date:   Tue Jul 4 15:46:21 2023 +0000
+
+    Fixes for twitter challenge
+
+[33mcommit 801761091073b120c33a5c010f12bedf44f14f15[m
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Tue Jun 13 17:45:32 2023 +0000
+
+    Update file email-service.md
+
+[33mcommit 433cbbbb0fc408b5b26dc62b2f7b218a204b6c23[m
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Mon Apr 24 13:44:31 2023 +0000
+
+    Update file email-service.md
+
+[33mcommit b45b404e2df643356dabcecf0fd126eff28a3824[m
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Mon Apr 24 13:29:30 2023 +0000
+
+    add email service challenge
+
+[33mcommit 60039182fab1d34d2ea2da70d1be374cd0171d44[m
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Thu Mar 9 17:45:15 2023 +0000
+
+    Update file README.md
+
+[33mcommit 00167bccb98f3a4753d8dd44e4c0845ef12b7e45[m
+Author: Mauro Kinderknecht <mauro.mkinderknecht@gmail.com>
+Date:   Fri Feb 3 17:14:00 2023 -0300
+
+    add secret santa challenge
+
+[33mcommit c2a5b858d847a36b52d38c61b7a74afcbd765b70[m
+Author: Mauro Kinderknecht <mauro.mkinderknecht@gmail.com>
+Date:   Wed Jan 25 12:49:48 2023 -0300
+
+    add direnv hook step
+
+[33mcommit c7f96098d19d63b97eb9e24a234c4062e7dc8d53[m
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Tue Jan 24 18:16:57 2023 +0000
+
+    Delete .DS_Store
+
+[33mcommit 11491609840bf174b01c4fb6dbfd1e502241fc27[m
+Author: MauroKinderknecht <mauro.kinderknecht@ing.austral.edu.ar>
+Date:   Tue Jan 24 18:16:34 2023 +0000
+
+    Update file .gitignore
+
+[33mcommit 683b94f1b1d06182e1938b116be1bae8c0d92136[m
+Author: Mauro Kinderknecht <mauro.mkinderknecht@gmail.com>
+Date:   Tue Jan 24 15:15:40 2023 -0300
+
+    first challenge
