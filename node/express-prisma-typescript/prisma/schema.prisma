@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// The generator block runs every time you run `prisma generate`.
-// The prisma-client-js is the default generator that builds ts types based on the db models.
-// You can find more about generators here: https://www.prisma.io/docs/concepts/components/prisma-schema/generators
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,6 +5,7 @@ generator client {
 // The datasource block specifies the url to your DBMS.
 // You only need to set the DATABASE_URL in your environment file.
 // You can find more about datasources here: https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
