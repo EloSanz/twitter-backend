@@ -26,6 +26,8 @@ model User {
   posts     Post[]
   follows   Follow[] @relation(name: "follows")
   followers Follow[] @relation(name: "followers")
+
+  publicPosts Boolean @default(true) // Task N° 2
 }
 
 model Follow {

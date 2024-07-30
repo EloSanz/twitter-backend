@@ -21,4 +21,23 @@ export class UserServiceImpl implements UserService {
   async deleteUser (userId: any): Promise<void> {
     await this.repository.delete(userId)
   }
+
+  // Task N° 2
+  async publicPosts (userId: string): Promise<void> {
+    try {
+      await this.repository.publicPosts(userId)
+    } catch (error) {
+      console.error('Error updating public posts:', error)
+      throw new Error('Error updating public posts')
+    }
+  }
+
+  async privatePosts (userId: string): Promise<void> {
+    try {
+      await this.repository.privatePosts(userId)
+    } catch (error) {
+      console.error('Error updating private posts:', error)
+      throw new Error('Error updating private posts')
+    }
+  }
 }

@@ -8,9 +8,11 @@ export class UserRepositoryImpl implements UserRepository {
   constructor (private readonly db: PrismaClient) {}
 
   async create (data: SignupInputDTO): Promise<UserDTO> {
-    return await this.db.user.create({
-      data
-    }).then(user => new UserDTO(user))
+    return await this.db.user
+      .create({
+        data
+      })
+      .then((user) => new UserDTO(user))
   }
 
   async getById (userId: any): Promise<UserDTO | null> {
@@ -40,7 +42,7 @@ export class UserRepositoryImpl implements UserRepository {
         }
       ]
     })
-    return users.map(user => new UserDTO(user))
+    return users.map((user) => new UserDTO(user))
   }
 
   async getByEmailOrUsername (email?: string, username?: string): Promise<ExtendedUserDTO | null> {
@@ -57,5 +59,27 @@ export class UserRepositoryImpl implements UserRepository {
       }
     })
     return user ? new ExtendedUserDTO(user) : null
+  }
+
+  async publicPosts (userId: string): Promise<void> {
+    await this.db.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        publicPosts: true
+      }
+    })
+  }
+
+  async privatePosts (userId: string): Promise<void> {
+    await this.db.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        publicPosts: false
+      }
+    })
   }
 }
