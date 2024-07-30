@@ -82,4 +82,12 @@ export class UserRepositoryImpl implements UserRepository {
       }
     })
   }
+
+  async isPublicById (userId: string): Promise<boolean> {
+    const user = await this.db.user.findUnique({
+      where: { id: userId },
+      select: { publicPosts: true }
+    })
+    return user?.publicPosts ?? false
+  }
 }

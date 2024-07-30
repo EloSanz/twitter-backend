@@ -11,4 +11,5 @@ export interface UserRepository {
   // Task N° 2
   privatePosts: (userId: any) => Promise<void>
   publicPosts: (userId: any) => Promise<void>
+  isPublicById: (userId: any) => Promise<boolean>
 }

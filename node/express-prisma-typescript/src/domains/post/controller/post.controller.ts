@@ -8,11 +8,13 @@ import { db, BodyValidation } from '@utils'
 import { PostRepositoryImpl } from '../repository'
 import { PostService, PostServiceImpl } from '../service'
 import { CreatePostInputDTO } from '../dto'
+import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.repository.impl'
+import { UserRepositoryImpl } from '@domains/user/repository'
 
 export const postRouter = Router()
 
 // Use dependency injection
-const service: PostService = new PostServiceImpl(new PostRepositoryImpl(db))
+const service: PostService = new PostServiceImpl(new PostRepositoryImpl(db), new FollowerRepositoryImpl(db), new UserRepositoryImpl(db))
 
 postRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
@@ -27,9 +29,12 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
 
-  const post = await service.getPost(userId, postId)
-
-  return res.status(HttpStatus.OK).json(post)
+  try {
+    const post = await service.getPost(userId, postId)
+    return res.status(HttpStatus.OK).json(post)
+  } catch (error) {
+    return res.status(HttpStatus.NOT_FOUND).json({ message: 'post not found' })
+  }
 })
 
 postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {

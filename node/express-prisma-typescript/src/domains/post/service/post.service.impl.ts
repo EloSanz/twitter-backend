@@ -4,9 +4,11 @@ import { PostService } from '.'
 import { validate } from 'class-validator'
 import { ForbiddenException, NotFoundException } from '@utils'
 import { CursorPagination } from '@types'
+import { FollowerRepository } from '@domains/follower/repository/follower.repository'
+import { UserRepository } from '@domains/user/repository'
 
 export class PostServiceImpl implements PostService {
-  constructor (private readonly repository: PostRepository) {}
+  constructor (private readonly repository: PostRepository, private readonly followRepository: FollowerRepository, private readonly userRepository: UserRepository) {}
 
   async createPost (userId: string, data: CreatePostInputDTO): Promise<PostDTO> {
     await validate(data)
@@ -21,10 +23,23 @@ export class PostServiceImpl implements PostService {
   }
 
   async getPost (userId: string, postId: string): Promise<PostDTO> {
-    // TODO: validate that the author has public profile or the user follows the author
     const post = await this.repository.getById(postId)
-    if (!post) throw new NotFoundException('post')
-    return post
+    if (!post) throw new NotFoundException('Post not found')
+
+    const author = await this.userRepository.getById(post.authorId)
+    if (!author) throw new NotFoundException('Author not found')
+
+    const isFollowing = await this.followRepository.isFollowing(userId, author.id)
+    if (isFollowing) console.log('se siguen')
+
+    const isPublic = await this.userRepository.isPublicById(author.id)
+    if (isPublic) console.log('es publico')
+
+    if (isPublic || isFollowing) {
+      return new PostDTO(post)
+    } else {
+      throw new NotFoundException('Post not found')
+    }
   }
 
   async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
