@@ -4,7 +4,7 @@ import { ReactionService } from '../service/reaction.service'
 import { db, isValidReactionType } from '@utils'
 import { ReactionRepositoryImpl } from '../repository/reaction.repository.impl'
 import { ReactionServiceImpl } from '../service/reaction.service.impl'
-import { AddReactionDto, RemoveReactionDto } from '../dto/reactionDto'
+import { AddReactionDto, ReactionDto, RemoveReactionDto } from '../dto/reactionDto'
 
 export const reactionRouter = Router()
 
@@ -15,16 +15,8 @@ reactionRouter.post('/:postId', async (req: Request, res: Response) => {
   const { postId } = req.params
   const { type }: AddReactionDto = req.body
 
-  if (!isValidReactionType(type)) {
-    return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid reaction type' })
-  }
-
-  try {
-    await service.addReaction(userId, postId, type)
-    return res.status(HttpStatus.CREATED).json({ message: 'Reaction added successfully' })
-  } catch (error) {
-    return res.status(HttpStatus.BAD_REQUEST).json({ error: `Post already reacted with ${type}` })
-  }
+  const reaction: ReactionDto = await service.addReaction(userId, postId, type)
+  return res.status(HttpStatus.CREATED).json({ message: 'Reaction added successfully', reaction })
 })
 
 reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
