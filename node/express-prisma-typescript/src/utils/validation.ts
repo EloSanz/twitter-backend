@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { ValidationException } from './errors'
 import { plainToInstance } from 'class-transformer'
 import { ClassType } from '@types'
+import { ReactionType } from '@prisma/client'
 
 export function BodyValidation<T> (target: ClassType<T>) {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -16,4 +17,8 @@ export function BodyValidation<T> (target: ClassType<T>) {
 
     next()
   }
+}
+
+export function isValidReactionType (type: any): type is ReactionType {
+  return Object.values(ReactionType).includes(type)
 }
