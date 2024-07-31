@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PostType, PrismaClient } from '@prisma/client'
 
 import { CursorPagination } from '@types'
 
@@ -12,7 +12,9 @@ export class PostRepositoryImpl implements PostRepository {
     const post = await this.db.post.create({
       data: {
         authorId: userId,
-        ...data
+        content: data.content,
+        images: data.images,
+        postType: PostType.POST // added type
       }
     })
     return new PostDTO(post)

@@ -43,3 +43,22 @@ reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
     return res.status(HttpStatus.BAD_REQUEST).json({ error: 'An error occurred' })
   }
 })
+reactionRouter.get('/likes/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params
+  try {
+    const likes = await service.getLikesByUser(userId)
+    return res.status(HttpStatus.OK).json(likes)
+  } catch (error) {
+    return res.status(HttpStatus.BAD_REQUEST).json({ error })
+  }
+})
+
+reactionRouter.get('/retweets/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params
+  try {
+    const retweets = await service.getRetweetsByUser(userId)
+    return res.status(HttpStatus.OK).json(retweets)
+  } catch (error) {
+    return res.status(HttpStatus.BAD_REQUEST).json({ error })
+  }
+})

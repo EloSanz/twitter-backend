@@ -9,3 +9,10 @@ export interface RemoveReactionDto {
   postId: string
   type: ReactionType
 }
+
+export interface ReactionDto {
+  id: string
+  postId: string
+  userId: string
+  type: ReactionType
+}

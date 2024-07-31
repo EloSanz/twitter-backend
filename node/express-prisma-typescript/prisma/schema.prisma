@@ -2,64 +2,67 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// The datasource block specifies the url to your DBMS.
-// You only need to set the DATABASE_URL in your environment file.
-// You can find more about datasources here: https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  username    String    @unique // Unique constraint
+  name        String?   @db.VarChar(35) // Limit display name to 35 characters
+  email       String    @unique // Unique constraint
+  password    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Optional value
 
-  username String  @unique // Unique constraint
-  name     String? @db.VarChar(35) // Limit display name to 35 characters
-  email    String  @unique // Unique constraint
-  password String
+  posts       Post[]    @relation("UserPosts")
+  publicPosts Boolean   @default(true) // Task N° 2
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime? // Optional value
-
-  posts     Post[]
-  follows   Follow[] @relation(name: "follows")
-  followers Follow[] @relation(name: "followers")
-
-  publicPosts Boolean @default(true) // Task N° 2
-
-  Reaction Reaction[]
+  follows     Follow[]  @relation(name: "follows")
+  followers   Follow[]  @relation(name: "followers")
+  
+  reactions   Reaction[]
 }
 
 model Follow {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  followerId  String    @db.Uuid()
+  followedId  String    @db.Uuid()
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Optional value
 
-  followerId String @db.Uuid()
-  followedId String @db.Uuid()
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime? // Optional value
-
-  follower User @relation(name: "follows", fields: [followerId], references: [id], onDelete: Cascade) // One to many
-  followed User @relation(name: "followers", fields: [followedId], references: [id], onDelete: Cascade) // One to many
+  follower    User      @relation(name: "follows", fields: [followerId], references: [id], onDelete: Cascade)
+  followed    User      @relation(name: "followers", fields: [followedId], references: [id], onDelete: Cascade)
 }
 
 model Post {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  authorId    String     @db.Uuid // Foreign Key
+  content     String     @db.VarChar(240) // Limit the content to 240 characters
+  images      String[]
+  postType    PostType  // Discriminates between POST and COMMENT
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?  // Optional value
 
-  authorId String   @db.Uuid // Foreign Key
-  content  String   @db.VarChar(240) // Limit the content to 240 characters
-  images   String[]
+  author      User       @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  reactions   Reaction[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime? // Optional value
+  comments    Post[]     @relation("PostComments")
+  // Self-referential field for comments
+  parentId    String?    @db.Uuid
+  parent      Post?      @relation("PostComments", fields: [parentId], references: [id])
 
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+  @@index([parentId]) // index for better performance on parentId
+}
 
-  Reaction Reaction[]
+
+enum PostType {
+  POST
+  COMMENT
 }
 
 model Reaction {

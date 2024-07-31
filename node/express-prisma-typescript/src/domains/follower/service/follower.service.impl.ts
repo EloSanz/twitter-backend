@@ -30,6 +30,7 @@ export class FollowerServiceImpl implements FollowerService {
     await this.repository.unfollow(followerId, followedId)
   }
 
+  // change
   async getUserFollowers (userId: string): Promise<any[]> {
     return await this.repository.findByUserId(userId)
   }
