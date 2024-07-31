@@ -35,19 +35,6 @@ export class PostRepositoryImpl implements PostRepository {
     return posts.map(post => new PostDTO(post))
   }
 
-  // Task N° 2
-  async getPublicPostAuthors (): Promise<string[]> {
-    const users = await this.db.user.findMany({
-      where: {
-        publicPosts: true
-      },
-      select: {
-        id: true
-      }
-    })
-    return users.map(user => user.id)
-  }
-
   async delete (postId: string): Promise<void> {
     await this.db.post.delete({
       where: {

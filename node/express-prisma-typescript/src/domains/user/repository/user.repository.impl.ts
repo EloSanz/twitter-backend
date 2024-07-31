@@ -90,4 +90,17 @@ export class UserRepositoryImpl implements UserRepository {
     })
     return user?.publicPosts ?? false
   }
+
+  // Task N° 2
+  async getPublicPostAuthors (): Promise<string[]> {
+    const users = await this.db.user.findMany({
+      where: {
+        publicPosts: true
+      },
+      select: {
+        id: true
+      }
+    })
+    return users.map(user => user.id)
+  }
 }

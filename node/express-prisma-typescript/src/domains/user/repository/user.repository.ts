@@ -9,6 +9,7 @@ export interface UserRepository {
   getById: (userId: string) => Promise<UserDTO | null>
   getByEmailOrUsername: (email?: string, username?: string) => Promise<ExtendedUserDTO | null>
   // Task N° 2
+  getPublicPostAuthors: () => Promise<string[]>
   privatePosts: (userId: any) => Promise<void>
   publicPosts: (userId: any) => Promise<void>
   isPublicById: (userId: any) => Promise<boolean>

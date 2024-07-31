@@ -43,10 +43,14 @@ export class PostServiceImpl implements PostService {
   }
 
   async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
-    const publicPostAuthors = await this.repository.getPublicPostAuthors()
+    const followedUserIds = await this.followRepository.getFollowedUserIds(userId)
+    const publicPostAuthors = await this.userRepository.getPublicPostAuthors()
     const posts = await this.repository.getAllByDatePaginated(options)
 
-    const filteredPosts = posts.filter(post => publicPostAuthors.includes(post.authorId))
+    const filteredPosts = posts.filter(post =>
+      publicPostAuthors.includes(post.authorId) || followedUserIds.includes(post.authorId)
+    )
+
     return filteredPosts.map(post => new PostDTO(post))
   }
 

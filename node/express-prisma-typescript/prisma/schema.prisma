@@ -28,6 +28,8 @@ model User {
   followers Follow[] @relation(name: "followers")
 
   publicPosts Boolean @default(true) // Task N° 2
+
+  Reaction Reaction[]
 }
 
 model Follow {
@@ -56,4 +58,23 @@ model Post {
   deletedAt DateTime? // Optional value
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+
+  Reaction Reaction[]
+}
+
+model Reaction {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId    String   @db.Uuid
+  userId    String   @db.Uuid
+  type      ReactionType
+
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId, type]) // a user can only react once per post per reaction type
+}
+
+enum ReactionType {
+  LIKE
+  RETWEET
 }
