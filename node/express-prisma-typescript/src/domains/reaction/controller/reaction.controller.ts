@@ -38,7 +38,7 @@ reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
 
   try {
     await service.removeReaction(userId, postId, type)
-    return res.status(HttpStatus.NO_CONTENT).send()
+    return res.status(HttpStatus.NO_CONTENT).json({ message: `Reaction ${type} deleted successfully` })
   } catch (error) {
     return res.status(HttpStatus.BAD_REQUEST).json({ error: 'An error occurred' })
   }
