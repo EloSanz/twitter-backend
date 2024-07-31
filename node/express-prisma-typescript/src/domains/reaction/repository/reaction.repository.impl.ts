@@ -1,6 +1,7 @@
 import { PrismaClient, ReactionType } from '@prisma/client'
 import { ReactionRepository } from './reaction.repository'
 import { ReactionDto } from '../dto/reactionDto'
+import { ConflictException, NotFoundException } from '@utils/errors'
 
 export class ReactionRepositoryImpl implements ReactionRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -11,7 +12,20 @@ export class ReactionRepositoryImpl implements ReactionRepository {
     })
 
     if (!postExists) {
-      throw new Error('Post ID does not exist')
+      throw new NotFoundException('Post ID does not exist')
+    }
+    const existingReaction = await this.db.reaction.findUnique({
+      where: {
+        postId_userId_type: {
+          postId,
+          userId,
+          type
+        }
+      }
+    })
+
+    if (existingReaction) {
+      throw new ConflictException(`Reaction of type ${type} already exists`)
     }
 
     const reaction = await this.db.reaction.create({
