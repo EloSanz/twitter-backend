@@ -26,12 +26,8 @@ reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
   const { postId } = req.params
   const { type }: RemoveReactionDto = req.body
 
-  try {
-    await service.removeReaction(userId, postId, type)
-    return res.status(HttpStatus.NO_CONTENT).json({ message: `Reaction ${type} deleted successfully` })
-  } catch (error) {
-    return res.status(HttpStatus.BAD_REQUEST).json({ error: 'An error occurred' })
-  }
+  await service.removeReaction(userId, postId, type)
+  return res.status(HttpStatus.NO_CONTENT).json({ message: `Reaction ${type} deleted successfully` })
 })
 reactionRouter.get('/likes/:userId', async (req: Request, res: Response) => {
   const { userId } = req.params

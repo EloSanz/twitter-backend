@@ -5,9 +5,10 @@ import { CommentServiceImpl } from '../service/comment.service.impl'
 import HttpStatus from 'http-status'
 import 'express-async-errors'
 import { CommentDto } from '../dto/comment.dto'
+import { UserRepositoryImpl } from '@domains/user/repository'
 
 const commentRouter = Router()
-const service = new CommentServiceImpl(new CommentRepositoryImpl(db))
+const service = new CommentServiceImpl(new CommentRepositoryImpl(db), new UserRepositoryImpl(db))
 
 commentRouter.get('/by-userId/:userId', async (req: Request, res: Response) => {
   const { userId } = req.params
