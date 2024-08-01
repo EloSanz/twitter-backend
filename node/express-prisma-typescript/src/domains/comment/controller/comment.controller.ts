@@ -24,7 +24,7 @@ commentRouter.post('/', async (req: Request, res: Response) => {
   return res.status(HttpStatus.CREATED).json({ message: 'Comment added successfully', comment })
 })
 
-commentRouter.get('/by-post/:postId', async (req: Request, res: Response) => {
+commentRouter.get('/by-postId/:postId', async (req: Request, res: Response) => {
   const { postId } = req.params
 
   const comments = await service.getCommentsByPost(postId)

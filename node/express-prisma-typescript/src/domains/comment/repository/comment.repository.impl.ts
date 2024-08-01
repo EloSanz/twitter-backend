@@ -7,27 +7,20 @@ export class CommentRepositoryImpl implements CommentRepository {
   constructor (private readonly db: PrismaClient) {}
 
   async findByUser (userId: string): Promise<CommentDto[]> {
+    // Primero obtenemos todos los posts del usuario
     const posts = await this.db.post.findMany({
       where: {
         authorId: userId,
-        postType: PostType.POST
+        postType: PostType.POST // Ajusta el tipo de post si es necesario
       },
       include: {
-        comments: true // Incluye los comentarios relacionados
+        comments: true // Incluye los comentarios asociados con los posts
       }
     })
 
-    // Mapea todos los comentarios encontrados
-    const comments = posts.flatMap(post =>
-      post.comments.map(comment => ({
-        id: comment.id,
-        postId: comment.parentId ?? post.id, // Usa parentId si está presente, sino el ID del post
-        userId: comment.authorId,
-        content: comment.content
-      }))
-    )
+    const comments = posts.flatMap((post) => post.comments)
 
-    return comments
+    return comments.map((comment) => new CommentDto(comment.id, comment.authorId, comment.content))
   }
 
   async createComment (postId: string, userId: string, content: string): Promise<CommentDto> {
@@ -39,12 +32,7 @@ export class CommentRepositoryImpl implements CommentRepository {
         parentId: postId
       }
     })
-    const newComment = new CommentDto(
-      newPost.id,
-      postId,
-      userId,
-      newPost.content
-    )
+    const newComment = new CommentDto(newPost.id, userId, newPost.content)
 
     return newComment
   }
@@ -57,7 +45,7 @@ export class CommentRepositoryImpl implements CommentRepository {
       }
     })
 
-    return comments.map(comment => ({
+    return comments.map((comment) => ({
       id: comment.id,
       postId: comment.parentId ?? postId,
       userId: comment.authorId,

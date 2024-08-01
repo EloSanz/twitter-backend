@@ -1,11 +1,15 @@
+import { userExists } from '@utils/database'
 import { CommentDto } from '../dto/comment.dto'
 import { CommentRepository } from '../repository/comment.repository'
 import { CommentService } from './comment.service'
+import { NotFoundException } from '@utils/errors'
 
 export class CommentServiceImpl implements CommentService {
   constructor (private readonly repository: CommentRepository) {}
 
   async getCommentsByUser (userId: string): Promise<CommentDto[]> {
+    if (!(await userExists(userId))) { throw new NotFoundException('User') }
+
     return await this.repository.findByUser(userId)
   }
 
