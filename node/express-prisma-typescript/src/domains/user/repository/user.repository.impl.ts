@@ -103,4 +103,13 @@ export class UserRepositoryImpl implements UserRepository {
     })
     return users.map(user => user.id)
   }
+
+  async existById (userId: string): Promise<boolean> {
+    const count = await this.db.user.count({
+      where: {
+        id: userId
+      }
+    })
+    return count > 0
+  }
 }

@@ -62,4 +62,13 @@ export class PostRepositoryImpl implements PostRepository {
     })
     return posts.map(post => new PostDTO(post))
   }
+
+  async existById (postId: string): Promise<boolean> {
+    const count = await this.db.post.count({
+      where: {
+        id: postId
+      }
+    })
+    return count > 0
+  }
 }

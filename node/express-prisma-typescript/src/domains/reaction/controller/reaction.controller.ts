@@ -1,14 +1,16 @@
 import { Router, Request, Response } from 'express'
 import HttpStatus from 'http-status'
 import { ReactionService } from '../service/reaction.service'
-import { db, isValidReactionType } from '@utils'
+import { db } from '@utils'
 import { ReactionRepositoryImpl } from '../repository/reaction.repository.impl'
 import { ReactionServiceImpl } from '../service/reaction.service.impl'
 import { AddReactionDto, ReactionDto, RemoveReactionDto } from '../dto/reactionDto'
+import { PostRepositoryImpl } from '@domains/post/repository'
+import { UserRepositoryImpl } from '@domains/user/repository'
 
 export const reactionRouter = Router()
 
-const service: ReactionService = new ReactionServiceImpl(new ReactionRepositoryImpl(db))
+const service: ReactionService = new ReactionServiceImpl(new ReactionRepositoryImpl(db), new PostRepositoryImpl(db), new UserRepositoryImpl(db))
 
 reactionRouter.post('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
@@ -23,12 +25,6 @@ reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
   const { type }: RemoveReactionDto = req.body
-  console.log('deleteando: ', type)
-  console.log('del user', userId)
-
-  if (!isValidReactionType(type)) {
-    return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid reaction type' })
-  }
 
   try {
     await service.removeReaction(userId, postId, type)
@@ -39,20 +35,14 @@ reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
 })
 reactionRouter.get('/likes/:userId', async (req: Request, res: Response) => {
   const { userId } = req.params
-  try {
-    const likes = await service.getLikesByUser(userId)
-    return res.status(HttpStatus.OK).json(likes)
-  } catch (error) {
-    return res.status(HttpStatus.BAD_REQUEST).json({ error })
-  }
+
+  const likes = await service.getLikesByUser(userId)
+  return res.status(HttpStatus.OK).json(likes)
 })
 
 reactionRouter.get('/retweets/:userId', async (req: Request, res: Response) => {
   const { userId } = req.params
-  try {
-    const retweets = await service.getRetweetsByUser(userId)
-    return res.status(HttpStatus.OK).json(retweets)
-  } catch (error) {
-    return res.status(HttpStatus.BAD_REQUEST).json({ error })
-  }
+
+  const retweets = await service.getRetweetsByUser(userId)
+  return res.status(HttpStatus.OK).json(retweets)
 })

@@ -1,6 +1,7 @@
 import { PostType, PrismaClient } from '@prisma/client'
 import { CommentDto } from '../dto/comment.dto'
 import { CommentRepository } from './comment.repository'
+import { PostDTO } from '@domains/post/dto'
 
 export class CommentRepositoryImpl implements CommentRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -29,22 +30,30 @@ export class CommentRepositoryImpl implements CommentRepository {
     return comments
   }
 
-  async createComment (postId: string, userId: string, content: string): Promise<void> {
-    await this.db.post.create({
+  async createComment (postId: string, userId: string, content: string): Promise<CommentDto> {
+    const newPost: PostDTO = await this.db.post.create({
       data: {
         authorId: userId,
         content,
         postType: PostType.COMMENT,
-        parentId: postId // El parentId será el ID del post original
+        parentId: postId
       }
     })
+    const newComment = new CommentDto(
+      newPost.id,
+      postId,
+      userId,
+      newPost.content
+    )
+
+    return newComment
   }
 
   async getCommentsByPostId (postId: string): Promise<CommentDto[]> {
     const comments = await this.db.post.findMany({
       where: {
         postType: PostType.COMMENT,
-        parentId: postId // Filtra por parentId que corresponde al postId del post original
+        parentId: postId
       }
     })
 

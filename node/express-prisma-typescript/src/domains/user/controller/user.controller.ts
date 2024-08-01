@@ -48,12 +48,16 @@ userRouter.delete('/', async (req: Request, res: Response) => {
 
 userRouter.put('/publicPosts', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
+
   await service.publicPosts(userId)
+
   return res.status(HttpStatus.OK).json({ message: 'User posts set to public' })
 })
 
 userRouter.put('/privatePosts', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
+
   await service.privatePosts(userId)
+
   return res.status(HttpStatus.OK).json({ message: 'User posts set to private' })
 })
