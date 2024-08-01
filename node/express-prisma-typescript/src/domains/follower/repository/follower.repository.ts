@@ -1,9 +1,8 @@
-import { Follow } from '@prisma/client'
 
 export interface FollowerRepository {
   follow: (followerId: string, followedId: string) => Promise<void>
   unfollow: (followerId: string, followedId: string) => Promise<void>
-  findByUserId: (userId: string) => Promise<Follow[]>
-  isFollowing: (followeId: string, followedId: string) => Promise<boolean>
+  getFollowersUserIds: (userId: string) => Promise<string[]>
+  isFollowing: (followerId: string, followedId: string) => Promise<boolean>
   getFollowedUserIds: (userId: string) => Promise<string[]>
 }

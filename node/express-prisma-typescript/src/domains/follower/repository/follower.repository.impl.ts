@@ -1,4 +1,4 @@
-import { PrismaClient, Follow } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { FollowerRepository } from './follower.repository'
 
 export class FollowerRepositoryImpl implements FollowerRepository {
@@ -22,8 +22,8 @@ export class FollowerRepositoryImpl implements FollowerRepository {
     })
   }
 
-  async findByUserId (userId: string): Promise<Follow[]> {
-    return await this.db.follow.findMany({
+  async getFollowersUserIds (userId: string): Promise<string[]> {
+    const follows = await this.db.follow.findMany({
       where: {
         OR: [
           { followerId: userId },
@@ -31,6 +31,7 @@ export class FollowerRepositoryImpl implements FollowerRepository {
         ]
       }
     })
+    return follows.map(follow => follow.followerId === userId ? follow.followedId : follow.followerId)
   }
 
   async isFollowing (followerId: string, followedId: string): Promise<boolean> {

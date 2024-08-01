@@ -9,15 +9,19 @@ export class FollowerServiceImpl implements FollowerService {
     private readonly userRepository: UserRepository
   ) {}
 
+  private async ensureUserExists (userId: string): Promise<void> {
+    const userExists = await this.userRepository.getById(userId)
+    if (!userExists) {
+      throw new NotFoundException('User does not exist')
+    }
+  }
+
   async follow (followerId: string, followedId: string): Promise<void> {
     if (followerId === followedId) {
       throw new ConflictException('Cannot follow yourself')
     }
 
-    const followedUserExists = await this.userRepository.getById(followedId)
-    if (!followedUserExists) {
-      throw new NotFoundException('User to follow does not exist')
-    }
+    await this.ensureUserExists(followedId)
 
     const alreadyFollowing = await this.repository.isFollowing(followerId, followedId)
     if (alreadyFollowing) {
@@ -27,11 +31,17 @@ export class FollowerServiceImpl implements FollowerService {
   }
 
   async unfollow (followerId: string, followedId: string): Promise<void> {
+    await this.ensureUserExists(followedId)
     await this.repository.unfollow(followerId, followedId)
   }
 
-  // change
-  async getUserFollowers (userId: string): Promise<any[]> {
-    return await this.repository.findByUserId(userId)
+  async getUserFollowers (userId: string): Promise<string[]> {
+    await this.ensureUserExists(userId)
+    return await this.repository.getFollowersUserIds(userId)
+  }
+
+  async getUserFollowed (userId: string): Promise<string[]> {
+    await this.ensureUserExists(userId)
+    return await this.repository.getFollowedUserIds(userId)
   }
 }
