@@ -29,12 +29,8 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
 
-  try {
-    const post = await service.getPost(userId, postId)
-    return res.status(HttpStatus.OK).json(post)
-  } catch (error) {
-    return res.status(HttpStatus.NOT_FOUND).json({ message: 'post not found' })
-  }
+  const post = await service.getPostByPostId(userId, postId)
+  return res.status(HttpStatus.OK).json(post)
 })
 
 postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {

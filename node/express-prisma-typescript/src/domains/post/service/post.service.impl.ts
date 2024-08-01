@@ -6,6 +6,7 @@ import { ForbiddenException, NotFoundException } from '@utils'
 import { CursorPagination } from '@types'
 import { FollowerRepository } from '@domains/follower/repository/follower.repository'
 import { UserRepository } from '@domains/user/repository'
+import { UserDTO } from '@domains/user/dto'
 
 export class PostServiceImpl implements PostService {
   constructor (private readonly repository: PostRepository, private readonly followRepository: FollowerRepository, private readonly userRepository: UserRepository) {}
@@ -22,20 +23,16 @@ export class PostServiceImpl implements PostService {
     await this.repository.delete(postId)
   }
 
-  async getPost (userId: string, postId: string): Promise<PostDTO> {
+  async getPostByPostId (userId: string, postId: string): Promise<PostDTO> {
     const post = await this.repository.getById(postId)
     if (!post) throw new NotFoundException('Post not found')
 
-    const author = await this.userRepository.getById(post.authorId)
+    const author: UserDTO | null = await this.userRepository.getById(post.authorId)
     if (!author) throw new NotFoundException('Author not found')
 
     const isFollowing = await this.followRepository.isFollowing(userId, author.id)
-    if (isFollowing) console.log('se siguen')
 
-    const isPublic = await this.userRepository.isPublicById(author.id)
-    if (isPublic) console.log('es publico')
-
-    if (isPublic || isFollowing) {
+    if (author.publicPosts || isFollowing) {
       return new PostDTO(post)
     } else {
       throw new NotFoundException('Post not found')
@@ -48,7 +45,9 @@ export class PostServiceImpl implements PostService {
     const posts = await this.repository.getAllByDatePaginated(options)
 
     const filteredPosts = posts.filter(post =>
-      publicPostAuthors.includes(post.authorId) || followedUserIds.includes(post.authorId)
+      post.authorId === userId || // posts by the user themselves
+      publicPostAuthors.includes(post.authorId) || // posts by authors with public posts
+      followedUserIds.includes(post.authorId) // posts by followed users
     )
 
     return filteredPosts.map(post => new PostDTO(post))
@@ -56,6 +55,17 @@ export class PostServiceImpl implements PostService {
 
   async getPostsByAuthor (userId: any, authorId: string): Promise<PostDTO[]> {
     // TODO: throw exception when the author has a private profile and the user doesn't follow them
-    return await this.repository.getByAuthorId(authorId)
+    const author: UserDTO | null = await this.userRepository.getById(authorId)
+    if (!author) throw new NotFoundException('Author not found')
+
+    const posts: PostDTO[] = await this.repository.getByAuthorId(authorId)
+
+    const isFollowing: boolean = await this.followRepository.isFollowing(userId, author.id)
+
+    if (!author.publicPosts && !isFollowing) {
+      throw new NotFoundException('The profile is private')
+    } else {
+      return posts
+    }
   }
 }

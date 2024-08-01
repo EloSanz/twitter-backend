@@ -23,6 +23,8 @@ reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
   const { type }: RemoveReactionDto = req.body
+  console.log('deleteando: ', type)
+  console.log('del user', userId)
 
   if (!isValidReactionType(type)) {
     return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid reaction type' })
