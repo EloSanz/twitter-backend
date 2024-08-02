@@ -61,7 +61,6 @@ model Post {
   @@index([parentId]) // index for better performance on parentId
 }
 
-
 enum PostType {
   POST
   COMMENT

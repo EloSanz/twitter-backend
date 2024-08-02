@@ -3,6 +3,8 @@ import { CommentRepository } from '../repository/comment.repository'
 import { CommentService } from './comment.service'
 import { NotFoundException } from '@utils/errors'
 import { UserRepository } from '@domains/user/repository'
+import { CursorPagination } from '@types'
+import { ExtendedPostDTO } from '@domains/post/dto'
 
 export class CommentServiceImpl implements CommentService {
   constructor (private readonly repository: CommentRepository, private readonly userRepository: UserRepository) {}
@@ -19,7 +21,7 @@ export class CommentServiceImpl implements CommentService {
     return await this.repository.createComment(postId, userId, content)
   }
 
-  async getCommentsByPost (postId: string): Promise<CommentDto[]> {
-    return await this.repository.getCommentsByPostId(postId)
+  async getCommentsByPostId (postId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+    return await this.repository.getCommentsByPostId(postId, options)
   }
 }

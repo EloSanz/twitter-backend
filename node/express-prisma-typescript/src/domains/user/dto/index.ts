@@ -11,7 +11,7 @@ export class UserDTO {
   name: string | null
   createdAt: Date
   publicPosts: boolean
-  profileImage?: string
+  profileImage?: string | null
 }
 
 export class ExtendedUserDTO extends UserDTO {
