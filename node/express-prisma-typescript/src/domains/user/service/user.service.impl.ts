@@ -3,9 +3,12 @@ import { OffsetPagination } from 'types'
 import { UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
 import { UserService } from './user.service'
+import { ImageService } from './image.service'
 
 export class UserServiceImpl implements UserService {
-  constructor (private readonly repository: UserRepository) {}
+  constructor (private readonly repository: UserRepository,
+    private readonly imageService: ImageService
+  ) {}
 
   async getUser (userId: any): Promise<UserViewDTO> {
     const user = await this.repository.getById(userId)
@@ -39,5 +42,18 @@ export class UserServiceImpl implements UserService {
       console.error('Error updating private posts:', error)
       throw new Error('Error updating private posts')
     }
+  }
+
+  async updateUserProfilePicture (userId: string, buffer: Buffer, originalName: string, mimeType: string): Promise<string> {
+    const user: boolean = await this.repository.existById(userId)
+    if (!user) throw new NotFoundException('user')
+    console.log('adding photo to ', userId)
+    return await this.imageService.uploadImage(userId, buffer, originalName, mimeType)
+  }
+
+  async getUserProfilePictureUrl (userId: string): Promise <string | null> {
+    const user: boolean = await this.repository.existById(userId)
+    if (!user) throw new NotFoundException('user')
+    return await this.imageService.getUserProfilePictureUrl(userId)
   }
 }

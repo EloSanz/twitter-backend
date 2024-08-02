@@ -15,7 +15,15 @@ export class UserRepositoryImpl implements UserRepository {
       .then((user) => new UserDTO(user))
   }
 
-  async getById (userId: any): Promise<UserViewDTO | null> {
+  async update (userId: string, imageUrl: string): Promise<UserDTO> {
+    return await this.db.user
+      .update({
+        where: { id: userId },
+        data: { profilePicture: imageUrl }
+      })
+  }
+
+  async getById (userId: string): Promise<UserViewDTO | null> {
     const user = await this.db.user.findUnique({
       where: {
         id: userId
@@ -24,7 +32,7 @@ export class UserRepositoryImpl implements UserRepository {
     return user ? new UserViewDTO(user) : null
   }
 
-  async delete (userId: any): Promise<void> {
+  async delete (userId: string): Promise<void> {
     await this.db.user.delete({
       where: {
         id: userId
