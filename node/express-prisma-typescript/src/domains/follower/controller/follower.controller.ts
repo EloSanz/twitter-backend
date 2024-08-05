@@ -1,3 +1,103 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Follower
+ *   description: Operations related to following and unfollowing users
+ */
+
+/**
+ * @swagger
+ * /api/follower/follow/{user_id}:
+ *   post:
+ *     summary: Follow a user
+ *     tags: [Follower]
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to follow
+ *     responses:
+ *       200:
+ *         description: Successfully followed user
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/follower/unfollow/{user_id}:
+ *   post:
+ *     summary: Unfollow a user
+ *     tags: [Follower]
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to unfollow
+ *     responses:
+ *       200:
+ *         description: Successfully unfollowed user
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/follower/followed:
+ *   get:
+ *     summary: Get a list of users followed by the current user
+ *     tags: [Follower]
+ *     responses:
+ *       200:
+ *         description: A list of followed user IDs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/follower/followers:
+ *   get:
+ *     summary: Get a list of followers of the current user
+ *     tags: [Follower]
+ *     responses:
+ *       200:
+ *         description: A list of followers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: The ID of the follower
+ *                   name:
+ *                     type: string
+ *                     description: The name of the follower
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+
 import { Request, Response, Router } from 'express'
 import HttpStatus from 'http-status'
 import 'express-async-errors'

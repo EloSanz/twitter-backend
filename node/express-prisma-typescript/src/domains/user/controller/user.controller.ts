@@ -36,7 +36,6 @@ userRouter.get('/me', async (req: Request, res: Response) => {
 
 userRouter.get('/pp', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
-  console.log('*********************', userId)
   const url: string | null = await service.getUserProfilePictureUrl(userId)
   if (!url) { return res.status(HttpStatus.NOT_FOUND).json({ message: 'Profile picture not found' }) }
 
@@ -46,7 +45,6 @@ userRouter.get('/pp', async (req: Request, res: Response) => {
 
 userRouter.get('/:userId', async (req: Request, res: Response) => {
   const { userId: otherUserId } = req.params
-  console.log('***************')
   const user = await service.getUser(otherUserId)
 
   return res.status(HttpStatus.OK).json(user)

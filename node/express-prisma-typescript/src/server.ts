@@ -7,6 +7,7 @@ import { Constants, NodeEnv, Logger } from '@utils'
 import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
 // testing repo
+import { setupSwagger } from './swagger'
 
 const app = express()
 
@@ -26,6 +27,7 @@ app.use(
     origin: Constants.CORS_WHITELIST
   })
 )
+setupSwagger(app)
 
 app.use('/api', router)
 
