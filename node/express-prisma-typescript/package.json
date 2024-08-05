@@ -48,6 +48,7 @@
     "@types/morgan": "^1.9.4",
     "@types/multer": "^1.4.11",
     "@types/node": "^18.19.43",
+    "@types/node-fetch": "^2.6.11",
     "@types/signale": "^1.4.4",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",

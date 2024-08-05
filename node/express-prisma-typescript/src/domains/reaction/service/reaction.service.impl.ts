@@ -15,36 +15,27 @@ export class ReactionServiceImpl implements ReactionService {
   ) {}
 
   async addReaction (userId: string, postId: string, type: ReactionType): Promise<ReactionDto> {
-    if (!isValidReactionType(type)) {
-      throw new ConflictException('Invalid reaction type')
-    }
+    if (!isValidReactionType(type)) { throw new ConflictException('Invalid reaction type') }
     const postExists: boolean = await this.postRepository.existById(postId)
-    if (!postExists) {
-      throw new NotFoundException('Post')
-    }
-    const reaction = await this.repository.addReaction(postId, userId, type)
-    return new ReactionDto(reaction)
+    if (!postExists) { throw new NotFoundException('Post') }
+    return await this.repository.addReaction(postId, userId, type)
   }
 
   async removeReaction (userId: string, postId: string, type: ReactionType): Promise<void> {
-    if (!isValidReactionType(type)) {
-      throw new ConflictException('Invalid reaction type')
-    }
+    if (!isValidReactionType(type)) { throw new ConflictException('Invalid reaction type') }
 
     await this.repository.removeReaction(postId, userId, type)
   }
 
   async getRetweetsByUser (userId: string): Promise<ReactionDto[]> {
-    if (!(await this.userRepository.existById(userId))) {
-      throw new NotFoundException('User')
-    }
+    if (!(await this.userRepository.existById(userId))) { throw new NotFoundException('User') }
+
     return await this.repository.findByUserAndType(userId, ReactionType.RETWEET)
   }
 
   async getLikesByUser (userId: string): Promise<ReactionDto[]> {
-    if (!(await this.userRepository.existById(userId))) {
-      throw new NotFoundException('User')
-    }
+    if (!(await this.userRepository.existById(userId))) { throw new NotFoundException('User') }
+
     return await this.repository.findByUserAndType(userId, ReactionType.LIKE)
   }
 }

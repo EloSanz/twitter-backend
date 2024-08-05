@@ -4,6 +4,7 @@ import { UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
 import { UserService } from './user.service'
 import { ImageService } from './image.service'
+import { Readable } from 'stream'
 
 export class UserServiceImpl implements UserService {
   constructor (private readonly repository: UserRepository,
@@ -26,34 +27,35 @@ export class UserServiceImpl implements UserService {
   }
 
   // Task N° 2
-  async publicPosts (userId: string): Promise<void> {
-    try {
-      await this.repository.publicPosts(userId)
-    } catch (error) {
-      console.error('Error updating public posts:', error)
-      throw new Error('Error updating public posts')
-    }
+  async setPublicPosts (userId: string): Promise<void> {
+    await this.repository.publicPosts(userId)
   }
 
-  async privatePosts (userId: string): Promise<void> {
-    try {
-      await this.repository.privatePosts(userId)
-    } catch (error) {
-      console.error('Error updating private posts:', error)
-      throw new Error('Error updating private posts')
-    }
-  }
-
-  async updateUserProfilePicture (userId: string, buffer: Buffer, originalName: string, mimeType: string): Promise<string> {
-    const user: boolean = await this.repository.existById(userId)
-    if (!user) throw new NotFoundException('user')
-    console.log('adding photo to ', userId)
-    return await this.imageService.uploadImage(userId, buffer, originalName, mimeType)
+  async setPrivatePosts (userId: string): Promise<void> {
+    await this.repository.privatePosts(userId)
   }
 
   async getUserProfilePictureUrl (userId: string): Promise <string | null> {
     const user: boolean = await this.repository.existById(userId)
     if (!user) throw new NotFoundException('user')
     return await this.imageService.getUserProfilePictureUrl(userId)
+  }
+
+  async getImage (key: string): Promise<Readable> {
+    return await this.imageService.getImage(key)
+  }
+
+  async generateUploadUrl (userId: string): Promise<{ uploadUrl: string, key: string }> {
+    return await this.imageService.generateUploadUrl(userId)
+  }
+
+  async generateDownloadUrl (key: string): Promise<string> {
+    return await this.imageService.generateDownloadUrl(key)
+  }
+
+  async updateUserProfilePicture (userId: string, key: string, uploadUrl: string, buffer: Buffer, originalName: string, mimeType: string): Promise<string> {
+    const user: boolean = await this.repository.existById(userId)
+    if (!user) throw new NotFoundException('user')
+    return await this.imageService.uploadImageWithUrlAndKey(userId, key, uploadUrl, buffer, originalName, mimeType)
   }
 }

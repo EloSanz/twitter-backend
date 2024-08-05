@@ -51,7 +51,7 @@ export class PostServiceImpl implements PostService {
     )
 
     return filteredPosts.map(post => new PostDTO(post))
-  }
+  } // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   async getPostsByAuthor (userId: any, authorId: string): Promise<PostDTO[]> {
     // TODO: throw exception when the author has a private profile and the user doesn't follow them
