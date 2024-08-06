@@ -1,4 +1,215 @@
-
+/**
+ * @swagger
+ * tags:
+ *   name: Posts
+ *   description: API endpoints for managing posts
+ */
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     CreatePostInputDTO:
+ *       type: object
+ *       properties:
+ *         content:
+ *           type: string
+ *           description: The content of the post
+ *           example: "This is a new post"
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: List of image URLs
+ *           example: ["image1.png", "image2.png"]
+ *       required:
+ *         - content
+ *     PostDTO:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The unique identifier of the post
+ *           example: "1234-5678-9101"
+ *         authorId:
+ *           type: string
+ *           description: The ID of the author
+ *           example: "abcd-efgh-ijkl"
+ *         content:
+ *           type: string
+ *           description: The content of the post
+ *           example: "This is a post"
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: List of image URLs
+ *           example: ["image1.png"]
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time the post was created
+ *           example: "2023-08-03T00:00:00.000Z"
+ *     ExtendedPostDTO:
+ *       type: object
+ *       allOf:
+ *         - $ref: '#/components/schemas/PostDTO'
+ *         - type: object
+ *           properties:
+ *             author:
+ *               $ref: '#/components/schemas/UserDTO'
+ *             qtyComments:
+ *               type: integer
+ *               description: Number of comments on the post
+ *               example: 5
+ *             qtyLikes:
+ *               type: integer
+ *               description: Number of likes on the post
+ *               example: 10
+ *             qtyRetweets:
+ *               type: integer
+ *               description: Number of retweets of the post
+ *               example: 3
+ *     UserDTO:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The unique identifier of the user
+ *           example: "abcd-efgh-ijkl"
+ *         username:
+ *           type: string
+ *           description: The username of the user
+ *           example: "johndoe"
+ *         email:
+ *           type: string
+ *           description: The email of the user
+ *           example: "eliseo@gmail.com"
+ */
+/**
+ * @swagger
+ * /api/post:
+ *   get:
+ *     tags: [Posts]
+ *     summary: Get the latest posts
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *           example: "2023-08-03T00:00:00.000Z"
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *           example: "2023-08-01T00:00:00.000Z"
+ *     responses:
+ *       200:
+ *         description: A list of posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ExtendedPostDTO'
+ */
+/**
+ * @swagger
+ * /api/post/{postId}:
+ *   get:
+ *     tags: [Posts]
+ *     summary: Get a post by its ID
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A post object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ExtendedPostDTO'
+ */
+/**
+ * @swagger
+ * /api/post/by_user/{userId}:
+ *   get:
+ *     tags: [Posts]
+ *     summary: Get posts by a specific user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *           example: "2023-08-03T00:00:00.000Z"
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *           example: "2023-08-01T00:00:00.000Z"
+ *     responses:
+ *       200:
+ *         description: A list of posts by the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ExtendedPostDTO'
+ */
+/**
+ * @swagger
+ * /api/post:
+ *   post:
+ *     tags: [Posts]
+ *     summary: Create a new post
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreatePostInputDTO'
+ *     responses:
+ *       201:
+ *         description: The created post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ExtendedPostDTO'
+ */
+/**
+ * @swagger
+ * /api/post/{postId}:
+ *   delete:
+ *     tags: [Posts]
+ *     summary: Delete a post by its ID
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Post deleted successfully
+ */
 import { Request, Response, Router } from 'express'
 import HttpStatus from 'http-status'
 // express-async-errors is a module that handles async errors in express, don't forget import it in your new controllers

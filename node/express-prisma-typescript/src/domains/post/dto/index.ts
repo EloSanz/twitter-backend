@@ -8,7 +8,9 @@ export class CreatePostInputDTO {
     content!: string
 
   @IsOptional()
-  @MaxLength(4)
+  @ArrayMaxSize(4, { message: 'images must contain at most 4 items' })
+  @IsString({ each: true, message: 'Each image must be a string' })
+  @ArrayNotEmpty({ message: 'images array should not be empty' })
     images?: string[]
 }
 
@@ -41,4 +43,11 @@ export class ExtendedPostDTO extends PostDTO {
   qtyComments!: number
   qtyLikes!: number
   qtyRetweets!: number
+}
+function ArrayMaxSize (arg0: number, arg1: { message: string }): (target: CreatePostInputDTO, propertyKey: 'images') => void {
+  throw new Error('Function not implemented.')
+}
+
+function ArrayNotEmpty (arg0: { message: string }): (target: CreatePostInputDTO, propertyKey: 'images') => void {
+  throw new Error('Function not implemented.')
 }
