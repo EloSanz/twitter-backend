@@ -8,15 +8,14 @@ import { UserDTO } from '@domains/user/dto'
 export class CommentRepositoryImpl implements CommentRepository {
   constructor (private readonly db: PrismaClient) {}
 
-  async findByUser (userId: string): Promise<CommentDto[]> {
-    // Primero obtenemos todos los posts del usuario
+  async getCommentsByUserId (userId: string): Promise<CommentDto[]> {
     const posts = await this.db.post.findMany({
       where: {
         authorId: userId,
-        postType: PostType.POST // Ajusta el tipo de post si es necesario
+        postType: PostType.POST
       },
       include: {
-        comments: true // Incluye los comentarios asociados con los posts
+        comments: true
       }
     })
 
@@ -47,7 +46,7 @@ export class CommentRepositoryImpl implements CommentRepository {
       },
       cursor: options.after ? { id: options.after } : undefined,
       skip: options.after ? 1 : undefined,
-      take: options.limit ?? 10,
+      take: options.limit ? options.limit : undefined,
       orderBy: [
         { reactions: { _count: 'desc' } },
         { createdAt: 'desc' }
@@ -67,7 +66,7 @@ export class CommentRepositoryImpl implements CommentRepository {
     })))
   }
 
-  private async getAuthor (authorId: string): Promise<UserDTO> {
+  async getAuthor (authorId: string): Promise<UserDTO> {
     const user = await this.db.user.findUnique({
       where: { id: authorId }
     })
@@ -81,7 +80,7 @@ export class CommentRepositoryImpl implements CommentRepository {
     })
   }
 
-  private async getCommentCount (postId: string): Promise<number> {
+  async getCommentCount (postId: string): Promise<number> {
     return await this.db.post.count({
       where: {
         parentId: postId,
@@ -90,7 +89,7 @@ export class CommentRepositoryImpl implements CommentRepository {
     })
   }
 
-  private async getReactionCount (postId: string, reactionType: ReactionType): Promise<number> {
+  async getReactionCount (postId: string, reactionType: ReactionType): Promise<number> {
     return await this.db.reaction.count({
       where: {
         postId,

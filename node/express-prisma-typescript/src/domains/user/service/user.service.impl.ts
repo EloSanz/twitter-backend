@@ -5,16 +5,22 @@ import { UserRepository } from '../repository'
 import { UserService } from './user.service'
 import { ImageService } from './image.service'
 import { Readable } from 'stream'
+import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.repository.impl'
 
 export class UserServiceImpl implements UserService {
   constructor (private readonly repository: UserRepository,
-    private readonly imageService: ImageService
+    private readonly imageService: ImageService,
+    private readonly followerRepository: FollowerRepositoryImpl
   ) {}
 
   async getUser (userId: any): Promise<UserViewDTO> {
     const user = await this.repository.getById(userId)
     if (!user) throw new NotFoundException('user')
     return user
+  }
+
+  async isFollowing (followedId: string, followerId: string): Promise<boolean> {
+    return await this.followerRepository.isFollowing(followedId, followerId)
   }
 
   async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserViewDTO[]> {

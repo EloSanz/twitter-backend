@@ -33,4 +33,10 @@ commentRouter.get('/by-postId/:postId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(comments)
 })
 
+commentRouter.get('/comment-count/:postId', async (req: Request, res: Response) => {
+  const { postId } = req.params
+  const count: number = await service.getCommentCount(postId)
+  return res.status(HttpStatus.OK).json(count)
+})
+
 export { commentRouter }

@@ -4,4 +4,5 @@ export interface FollowerService {
   unfollow: (followerId: string, followedId: string) => Promise<void>
   getUserFollowers: (userId: string) => Promise<string[]>
   getUserFollowed: (userId: string) => Promise<string[]>
+  isFollowing: (followerId: string, followedId: string) => Promise<boolean>
 }

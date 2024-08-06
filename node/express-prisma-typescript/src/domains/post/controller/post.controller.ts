@@ -1,3 +1,4 @@
+
 import { Request, Response, Router } from 'express'
 import HttpStatus from 'http-status'
 // express-async-errors is a module that handles async errors in express, don't forget import it in your new controllers
@@ -37,7 +38,7 @@ postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { userId: authorId } = req.params
 
-  const posts = await service.getPostsByAuthor(userId, authorId)
+  const posts = await service.getPostsByUserId(userId, authorId)
 
   return res.status(HttpStatus.OK).json(posts)
 })

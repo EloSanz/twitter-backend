@@ -13,5 +13,5 @@ export interface UserService {
   generateUploadUrl: (userId: string) => Promise<{ uploadUrl: string, key: string }>
   generateDownloadUrl: (key: string) => Promise<string>
   updateUserProfilePicture: (userId: string, key: string, updateUrl: string, buffer: Buffer, originalname: string, mimetype: string) => Promise <string | null>
-
+  isFollowing: (followedId: string, followerId: string) => Promise<boolean>
 }

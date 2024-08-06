@@ -17,6 +17,13 @@
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/SignupInputDTO'
+ *           examples:
+ *             example1:
+ *               summary: Example request for signup
+ *               value:
+ *                 email: "eliseo@gmail.com"
+ *                 username: "elito"
+ *                 password: "StrongPassword123@"
  *     responses:
  *       201:
  *         description: Successfully registered user
@@ -46,6 +53,13 @@
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/LoginInputDTO'
+ *           examples:
+ *             example1:
+ *               summary: Example request for login
+ *               value:
+ *                 email: "eliseo@gmail.com"
+ *                 username: "elito"
+ *                 password: "StrongPassword123@"
  *     responses:
  *       200:
  *         description: Successfully authenticated user
@@ -96,6 +110,7 @@
  *           type: string
  *           description: The password for authentication
  */
+
 import { Request, Response, Router } from 'express'
 import HttpStatus from 'http-status'
 // express-async-errors is a module that handles async errors in express, don't forget import it in your new controllers

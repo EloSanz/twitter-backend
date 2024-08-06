@@ -9,6 +9,10 @@ export class FollowerServiceImpl implements FollowerService {
     private readonly userRepository: UserRepository
   ) {}
 
+  async isFollowing (followerId: string, followedId: string): Promise<boolean> {
+    return await this.repository.isFollowing(followerId, followedId)
+  }
+
   private async ensureUserExists (userId: string): Promise<void> {
     const userExists = await this.userRepository.getById(userId)
     if (!userExists) {

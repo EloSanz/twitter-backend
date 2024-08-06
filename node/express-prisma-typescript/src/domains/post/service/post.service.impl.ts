@@ -1,4 +1,4 @@
-import { CreatePostInputDTO, PostDTO } from '../dto'
+import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 import { PostRepository } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
@@ -25,40 +25,29 @@ export class PostServiceImpl implements PostService {
 
   async getPostByPostId (userId: string, postId: string): Promise<PostDTO> {
     const post = await this.repository.getById(postId)
-    if (!post) throw new NotFoundException('Post not found')
+    if (!post) throw new NotFoundException('Post')
 
     const author: UserViewDTO | null = await this.userRepository.getById(post.authorId)
-    if (!author) throw new NotFoundException('Author not found')
+    if (!author) throw new NotFoundException('Author')
 
     const isFollowing = await this.followRepository.isFollowing(userId, author.id)
 
     if (author.publicPosts || isFollowing) {
       return new PostDTO(post)
     } else {
-      throw new NotFoundException('Post not found')
+      throw new NotFoundException('Post')
     }
   }
 
-  async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
-    const followedUserIds = await this.followRepository.getFollowedUserIds(userId)
-    const publicPostAuthors = await this.userRepository.getPublicPostAuthors()
-    const posts = await this.repository.getAllByDatePaginated(options)
+  async getLatestPosts (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+    return await this.repository.getAllByDatePaginated(userId, options)
+  }
 
-    const filteredPosts = posts.filter(post =>
-      post.authorId === userId || // posts by the user themselves
-      publicPostAuthors.includes(post.authorId) || // posts by authors with public posts
-      followedUserIds.includes(post.authorId) // posts by followed users
-    )
-
-    return filteredPosts.map(post => new PostDTO(post))
-  } // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  async getPostsByAuthor (userId: any, authorId: string): Promise<PostDTO[]> {
-    // TODO: throw exception when the author has a private profile and the user doesn't follow them
+  async getPostsByUserId (userId: any, authorId: string): Promise<ExtendedPostDTO[]> {
     const author: UserViewDTO | null = await this.userRepository.getById(authorId)
-    if (!author) throw new NotFoundException('Author not found')
+    if (!author) throw new NotFoundException('Author')
 
-    const posts: PostDTO[] = await this.repository.getByAuthorId(authorId)
+    const posts: ExtendedPostDTO[] = await this.repository.getByUserId(authorId)
 
     const isFollowing: boolean = await this.followRepository.isFollowing(userId, author.id)
 
