@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
+import { ArrayMaxSize, ArrayNotEmpty, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
 import { UserDTO } from '@domains/user/dto'
 
 export class CreatePostInputDTO {
@@ -43,11 +43,4 @@ export class ExtendedPostDTO extends PostDTO {
   qtyComments!: number
   qtyLikes!: number
   qtyRetweets!: number
-}
-function ArrayMaxSize (arg0: number, arg1: { message: string }): (target: CreatePostInputDTO, propertyKey: 'images') => void {
-  throw new Error('Function not implemented.')
-}
-
-function ArrayNotEmpty (arg0: { message: string }): (target: CreatePostInputDTO, propertyKey: 'images') => void {
-  throw new Error('Function not implemented.')
 }
