@@ -26,6 +26,8 @@ model User {
   followers   Follow[]  @relation(name: "followers")
   
   reactions   Reaction[]
+  sentMessages Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model Follow {
@@ -82,10 +84,21 @@ enum ReactionType {
   LIKE
   RETWEET
 }
+
 model Message {
   id        Int      @id @default(autoincrement())
-  userId    String   @db.Uuid
+  senderId  String   @db.Uuid
+  receiverId String  @db.Uuid
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  status    MessageStatus @default(SENT) // Status of the message
+
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver  User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
 }
