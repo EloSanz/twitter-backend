@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { Constants } from '@utils'
@@ -31,4 +31,14 @@ export const encryptPassword = async (password: string): Promise<string> => {
 
 export const checkPassword = async (password: string, hash: string): Promise<boolean> => {
   return await bcrypt.compare(password, hash)
+}
+
+export const verifySocketToken = (token: string, callback: (err: Error | null, decoded: jwt.JwtPayload | null) => void): void => {
+  jwt.verify(token, Constants.TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      callback(new UnauthorizedException('INVALID_TOKEN'), null)
+    } else {
+      callback(null, decoded as jwt.JwtPayload)
+    }
+  })
 }

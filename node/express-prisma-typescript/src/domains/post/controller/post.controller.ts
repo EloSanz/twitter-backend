@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *   name: Posts
- *   description: API endpoints for managing posts
+ *   description: Posts management
  */
 /**
  * @swagger
@@ -158,12 +158,10 @@
  *         name: before
  *         schema:
  *           type: string
- *           example: "2023-08-03T00:00:00.000Z"
  *       - in: query
  *         name: after
  *         schema:
  *           type: string
- *           example: "2023-08-01T00:00:00.000Z"
  *     responses:
  *       200:
  *         description: A list of posts by the user

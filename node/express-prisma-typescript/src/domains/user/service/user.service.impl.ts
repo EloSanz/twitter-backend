@@ -4,7 +4,6 @@ import { UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
 import { UserService } from './user.service'
 import { ImageService } from './image.service'
-import { Readable } from 'stream'
 import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.repository.impl'
 
 export class UserServiceImpl implements UserService {
@@ -20,7 +19,7 @@ export class UserServiceImpl implements UserService {
   }
 
   async isFollowing (followedId: string, followerId: string): Promise<boolean> {
-    return await this.followerRepository.isFollowing(followedId, followerId)
+    return await this.followerRepository.isFollowing(followerId, followedId)
   }
 
   async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserViewDTO[]> {
@@ -45,10 +44,6 @@ export class UserServiceImpl implements UserService {
     const user: boolean = await this.repository.existById(userId)
     if (!user) throw new NotFoundException('user')
     return await this.imageService.getUserProfilePictureUrl(userId)
-  }
-
-  async getImage (key: string): Promise<Readable> {
-    return await this.imageService.getImage(key)
   }
 
   async generateUploadUrl (userId: string): Promise<{ uploadUrl: string, key: string }> {

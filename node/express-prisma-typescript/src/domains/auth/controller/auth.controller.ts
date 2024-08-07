@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *   name: Auth
- *   description: Authentication related operations
+ *   description: Authentication management
  */
 
 /**

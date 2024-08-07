@@ -1,5 +1,11 @@
 /**
  * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management
+ */
+/**
+ * @swagger
  * components:
  *   schemas:
  *     UserViewDTO:
@@ -21,14 +27,6 @@
  *         publicPosts:
  *           type: boolean
  *           description: Indicates if the user's posts are public
- */
-
-/**
-/**
- * @swagger
- * tags:
- *   name: Users
- *   description: User management
  */
 
 /**
@@ -171,7 +169,7 @@
 /**
  * @swagger
  * /api/user/generate-upload-url:
- *   post:
+ *   get:
  *     summary: Generate a URL for uploading an image
  *     tags: [Users]
  *     responses:
@@ -189,7 +187,7 @@
 /**
  * @swagger
  * /api/user/upload-image:
- *   post:
+ *   put:
  *     summary: Upload an image for the user
  *     tags: [Users]
  *     requestBody:
@@ -243,11 +241,8 @@ import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.re
 export const userRouter = Router()
 const upload = multer({ storage: multer.memoryStorage() })
 
-// Use dependency injection
-
 const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db),
-  new ImageService(new UserRepositoryImpl(db)),
-  new FollowerRepositoryImpl(db))
+  new ImageService(new UserRepositoryImpl(db)), new FollowerRepositoryImpl(db))
 
 userRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
@@ -272,9 +267,14 @@ userRouter.get('/profile-picture', async (req: Request, res: Response) => {
   if (!url) { return res.status(HttpStatus.NOT_FOUND).json({ message: 'Profile picture not found' }) }
 
   res.status(HttpStatus.OK).json({ url })
-  res.status(HttpStatus.OK)
 })
 
+userRouter.get('/generate-upload-url', async (req: Request, res: Response) => {
+  const userId = res.locals.context.userId
+  const uploadUrl = await service.generateUploadUrl(userId) // the client must use this url to upload the image directly to S3
+
+  res.status(HttpStatus.OK).json({ uploadUrl })
+})
 userRouter.get('/:userId', async (req: Request, res: Response) => {
   const { userId: otherUserId } = req.params
   const { userId } = res.locals.context
@@ -314,14 +314,7 @@ userRouter.get('/download-image/:key', async (req: Request, res: Response) => {
   res.status(HttpStatus.OK).json({ downloadUrl })
 })
 
-userRouter.post('/generate-upload-url', async (req: Request, res: Response) => {
-  const userId = res.locals.context.userId
-  const uploadUrl = await service.generateUploadUrl(userId) // the client must use this url to upload the image directly to S3
-
-  res.status(HttpStatus.OK).json({ uploadUrl })
-})
-
-userRouter.post('/upload-image', upload.single('image'), async (req: Request, res: Response) => {
+userRouter.put('/upload-image', upload.single('image'), async (req: Request, res: Response) => {
   const userId = res.locals.context.userId
   const file = req.file
   const uploadUrl: string = req.body.uploadUrl

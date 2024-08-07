@@ -6,12 +6,12 @@ import cors from 'cors'
 import { Constants, NodeEnv, Logger } from '@utils'
 import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
-// testing repo
+
 import { setupSwagger } from './swagger'
+import { setupSocketIO } from '@socket'
 
 const app = express()
 
-// Set up request logger
 if (Constants.NODE_ENV === NodeEnv.DEV) {
   app.use(morgan('tiny')) // Log requests only in development environments
 }
@@ -33,6 +33,10 @@ app.use('/api', router)
 
 app.use(ErrorHandling)
 
-app.listen(Constants.PORT, () => {
+const listening = app.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`)
 })
+
+const io = setupSocketIO(listening)
+
+app.set('socketio', io)

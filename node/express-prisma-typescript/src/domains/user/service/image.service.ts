@@ -2,7 +2,6 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3
 import { UserRepository } from '../repository'
 import { v4 as uuidv4 } from 'uuid'
 import { UserViewDTO } from '../dto'
-import { Readable } from 'stream'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 export class ImageService {
@@ -38,29 +37,12 @@ export class ImageService {
   async getUserProfilePictureUrl (userId: string): Promise<string | null> {
     const user: UserViewDTO | null = await this.repository.getById(userId)
     if (!user?.profilePicture) { return null }
-    console.log(user)
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    const url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${user.profilePicture}`
-    return url
-  }
 
-  async getImage (key: string): Promise<Readable> {
-    try {
-      const command = new GetObjectCommand({
-        Bucket: this.bucketName,
-        Key: key
-      })
-
-      const response = await this.s3Client.send(command)
-      return response.Body as Readable
-    } catch (error) {
-      console.error('Error getting image from S3:', error)
-      throw new Error('Failed to get image from S3')
-    }
+    return await this.generateDownloadUrl(user.profilePicture)
   }
 
   async generateUploadUrl (userId: string): Promise<{ uploadUrl: string, key: string }> {
-    const key = `${uuidv4()}-profile-picture`
+    const key = `${uuidv4()}`
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: key

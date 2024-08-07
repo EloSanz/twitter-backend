@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *   name: Follower
- *   description: Operations related to following and unfollowing users
+ *   description: Manage follow and unfollow
  */
 
 /**

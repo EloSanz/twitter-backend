@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *   - name: Comments
- *     description: Operations related to comments
+ *     description: Comments management
  */
 
 /**
@@ -28,10 +28,12 @@
  *       properties:
  *         id:
  *           type: string
+ *           format: uuid
  *           example: "post123"
  *         authorId:
  *           type: string
- *           example: "user123"
+ *           format: uuid
+ *           example: 4c3e224a-b60a-4b42-bfc6-c6bd7e495ef4
  *         content:
  *           type: string
  *           example: "This is a post."
@@ -60,7 +62,8 @@
  *       properties:
  *         id:
  *           type: string
- *           example: "user123"
+ *           format: uuid
+ *           example: 606ffcfd-a159-4400-b46d-1cecda23725c
  *         username:
  *           type: string
  *           example: "john_doe"

@@ -22,18 +22,6 @@ export class FollowerRepositoryImpl implements FollowerRepository {
     })
   }
 
-  async getFollowersUserIds (userId: string): Promise<string[]> {
-    const follows = await this.db.follow.findMany({
-      where: {
-        OR: [
-          { followerId: userId },
-          { followedId: userId }
-        ]
-      }
-    })
-    return follows.map(follow => follow.followerId === userId ? follow.followedId : follow.followerId)
-  }
-
   async isFollowing (followerId: string, followedId: string): Promise<boolean> {
     const existingFollower = await this.db.follow.findFirst({
       where: {
@@ -42,6 +30,14 @@ export class FollowerRepositoryImpl implements FollowerRepository {
       }
     })
     return !!existingFollower
+  }
+
+  async getFollowersUserIds (userId: string): Promise<string[]> {
+    const follows = await this.db.follow.findMany({
+      where: { followedId: userId },
+      select: { followerId: true }
+    })
+    return follows.map(follow => follow.followerId)
   }
 
   async getFollowedUserIds (userId: string): Promise<string[]> {

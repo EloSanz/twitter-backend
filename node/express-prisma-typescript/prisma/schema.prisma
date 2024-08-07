@@ -82,3 +82,10 @@ enum ReactionType {
   LIKE
   RETWEET
 }
+model Message {
+  id        Int      @id @default(autoincrement())
+  userId    String   @db.Uuid
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
