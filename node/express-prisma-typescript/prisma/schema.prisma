@@ -8,25 +8,25 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-  username    String    @unique // Unique constraint
-  name        String?   @db.VarChar(35) // Limit display name to 35 characters
-  email       String    @unique // Unique constraint
-  password    String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime? // Optional value
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  username         String    @unique // Unique constraint
+  name             String?   @db.VarChar(35) // Limit display name to 35 characters
+  email            String    @unique // Unique constraint
+  password         String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime? // Optional value
   
-  profilePicture String?
+  profilePicture   String?
   
-  posts       Post[]    @relation("UserPosts")
-  publicPosts Boolean   @default(true) // Task N° 2
+  posts            Post[]    @relation("UserPosts")
+  publicPosts      Boolean   @default(true)
 
-  follows     Follow[]  @relation(name: "follows")
-  followers   Follow[]  @relation(name: "followers")
+  follows          Follow[]  @relation(name: "follows")
+  followers        Follow[]  @relation(name: "followers")
   
-  reactions   Reaction[]
-  sentMessages Message[] @relation("SentMessages")
+  reactions        Reaction[]
+  sentMessages     Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
 }
 
@@ -87,8 +87,8 @@ enum ReactionType {
 
 model Message {
   id        Int      @id @default(autoincrement())
-  senderId  String   @db.Uuid
-  receiverId String  @db.Uuid
+  senderId  String   @db.Uuid // Foreign key to User
+  receiverId String  @db.Uuid // Foreign key to User
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -97,6 +97,7 @@ model Message {
   sender    User     @relation("SentMessages", fields: [senderId], references: [id])
   receiver  User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }
+
 enum MessageStatus {
   SENT
   DELIVERED

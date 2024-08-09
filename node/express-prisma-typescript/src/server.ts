@@ -9,6 +9,7 @@ import { ErrorHandling } from '@utils/errors'
 
 import { setupSwagger } from './swagger'
 import { setupSocketIO } from '@socket'
+import path from 'path'
 
 const app = express()
 
@@ -30,6 +31,8 @@ app.use(
 setupSwagger(app)
 
 app.use('/api', router)
+// testing front
+app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(ErrorHandling)
 
