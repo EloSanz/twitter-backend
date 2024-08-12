@@ -18,13 +18,13 @@ export class UserServiceImpl implements UserService {
     return user
   }
 
-  async isFollowing (followedId: string, followerId: string): Promise<boolean> {
-    return await this.followerRepository.isFollowing(followerId, followedId)
-  }
-
   async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserViewDTO[]> {
     // TODO: make this return only users followed by users the original user follows
     return await this.repository.getRecommendedUsersPaginated(options)
+  }
+
+  async getByUsername (username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
+    return await this.repository.getByUsername(username, options)
   }
 
   async deleteUser (userId: any): Promise<void> {
@@ -38,6 +38,10 @@ export class UserServiceImpl implements UserService {
 
   async setPrivatePosts (userId: string): Promise<void> {
     await this.repository.privatePosts(userId)
+  }
+
+  async isFollowing (followedId: string, followerId: string): Promise<boolean> {
+    return await this.followerRepository.isFollowing(followerId, followedId)
   }
 
   async getUserProfilePictureUrl (userId: string): Promise <string | null> {

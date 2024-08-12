@@ -56,6 +56,41 @@
  *               items:
  *                 $ref: '#/components/schemas/UserViewDTO'
  */
+
+/**
+ * @swagger
+ * /api/user/by_username/{username}:
+ *   get:
+ *     summary: Bring users whose username is included in the username field
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         schema:
+ *           type: string
+ *         description: The username to search for
+ *         required: true
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of users to retrieve
+ *       - in: query
+ *         name: skip
+ *         schema:
+ *           type: integer
+ *         description: Number of users to skip
+ *     responses:
+ *       200:
+ *         description: List of users with username included in the username field
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/UserViewDTO'
+ */
+
 /**
  * @swagger
  * /api/user/me:
@@ -237,6 +272,7 @@ import { UserService, UserServiceImpl } from '../service'
 import { ImageService } from '../service/image.service'
 import multer from 'multer'
 import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.repository.impl'
+import { UserViewDTO } from '../dto'
 
 export const userRouter = Router()
 const upload = multer({ storage: multer.memoryStorage() })
@@ -284,7 +320,14 @@ userRouter.get('/:userId', async (req: Request, res: Response) => {
 
   return res.status(HttpStatus.OK).json({ user, following })
 })
+userRouter.get('/by_username/:username', async (req: Request, res: Response) => {
+  const username: string = req.params.username
+  const { limit, skip } = req.query as Record<string, string>
 
+  const users: UserViewDTO[] = await service.getByUsername(username, { limit: Number(limit), skip: Number(skip) })
+
+  return res.status(HttpStatus.OK).json(users)
+})
 userRouter.delete('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
