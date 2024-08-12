@@ -2,6 +2,7 @@ import { Message } from '@prisma/client'
 import { CreateMessageDto, MessageStatus } from '../dto/messageDTO'
 
 export interface MessageService {
+  checkFollowStatus: (senderId: string, receiverId: string) => Promise<boolean>
   createMessage: (newMessage: CreateMessageDto) => Promise<Message>
   getMessages: () => Promise<Message[]>
   getMessageById: (id: number) => Promise<Message | null>

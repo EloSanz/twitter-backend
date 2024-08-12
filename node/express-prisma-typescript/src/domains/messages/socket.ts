@@ -44,23 +44,27 @@ export const setupSocketIO = (server: http.Server): Server => {
     console.log('User connected: ', socket.data.userId)
 
     socket.on('joinRoom', async ({ receiverId }: JoinRoomPayload) => {
-      const userId = socket.data.userId
       const senderId = socket.data.userId
 
       if (!senderId || !receiverId) {
-        console.error('Sender ID and Receiver ID are required'); return
+        console.error('Sender ID and Receiver ID are required')
+        return
       }
 
       try {
-        const roomId = `room-${senderId}-${receiverId}`
-        console.log(roomId)
+        const followStatus: boolean = await messageService.checkFollowStatus(senderId, receiverId)
+        if (!followStatus) {
+          socket.emit('error', 'You can only chat if you follow each other.')
+          return
+        }
+
+        const roomId = getRoomId(senderId, receiverId)
         await socket.join(roomId)
 
         const messages: Message[] = await messageService.getMessagesBetweenUsers(senderId, receiverId)
-        console.log('esto traje: ', messages[0].content)
         socket.emit('previousMessages', messages)
 
-        console.log(`User ${userId} joined chat with ${receiverId}`)
+        console.log(`User ${senderId} joined chat with ${receiverId}`)
       } catch (error) {
         console.error('Error joining room or fetching messages:', error)
       }
@@ -93,4 +97,9 @@ export const setupSocketIO = (server: http.Server): Server => {
   })
 
   return io
+}
+
+function getRoomId (userId1: string, userId2: string): string {
+  const [firstId, secondId] = [userId1, userId2].sort()
+  return `room-${firstId}-${secondId}`
 }

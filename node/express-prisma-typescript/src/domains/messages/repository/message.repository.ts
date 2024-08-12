@@ -8,5 +8,5 @@ export interface MessageRepository {
   deleteMessage: (id: number) => Promise<Message>
   updateMessageStatus: (id: number, status: MessageStatus) => Promise<Message>
   getMessagesBetweenUsers: (senderId: string, receiverId: string) => Promise<Message[]>
-
+  checkFollowStatus: (senderId: string, receiverId: string) => Promise <boolean>
 }

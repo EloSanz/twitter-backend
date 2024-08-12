@@ -8,7 +8,7 @@ import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
 
 import { setupSwagger } from './swagger'
-import { setupSocketIO } from '@socket'
+import { setupSocketIO } from '@domains/messages/socket'
 import path from 'path'
 
 const app = express()

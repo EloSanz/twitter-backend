@@ -5,11 +5,17 @@ import { CreateMessageDto, MessageStatus } from '../dto/messageDTO'
 export class MessageRepositoryImpl implements MessageRepository {
   constructor (private readonly db: PrismaClient) {}
 
+  async checkFollowStatus (followerId: string, followedId: string): Promise<boolean> {
+    const follows = await this.db.follow.findFirst({
+      where: { followerId, followedId }
+    })
+    return !!follows
+  }
+
   async createMessage (newMessage: CreateMessageDto): Promise<Message> {
     if (!newMessage.senderId || !newMessage.receiverId || !newMessage.content) {
       throw new Error('Missing required fields')
     }
-
     const message = await this.db.message.create({
       data: {
         sender: { connect: { id: newMessage.senderId } },
