@@ -9,28 +9,22 @@ export class FollowerServiceImpl implements FollowerService {
     private readonly userRepository: UserRepository
   ) {}
 
+  private async ensureUserExists (userId: string): Promise<void> {
+    const userExists: boolean = await this.userRepository.existById(userId)
+    if (!userExists) { throw new NotFoundException('User does not exist') }
+  }
+
   async isFollowing (followerId: string, followedId: string): Promise<boolean> {
     return await this.repository.isFollowing(followerId, followedId)
   }
 
-  private async ensureUserExists (userId: string): Promise<void> {
-    const userExists = await this.userRepository.getById(userId)
-    if (!userExists) {
-      throw new NotFoundException('User does not exist')
-    }
-  }
-
   async follow (followerId: string, followedId: string): Promise<void> {
-    if (followerId === followedId) {
-      throw new ConflictException('Cannot follow yourself')
-    }
-
+    if (followerId === followedId) { throw new ConflictException('Cannot follow yourself') }
     await this.ensureUserExists(followedId)
 
     const alreadyFollowing = await this.repository.isFollowing(followerId, followedId)
-    if (alreadyFollowing) {
-      throw new ConflictException('User already followed')
-    }
+    if (alreadyFollowing) { throw new ConflictException('User already followed') }
+
     await this.repository.follow(followerId, followedId)
   }
 

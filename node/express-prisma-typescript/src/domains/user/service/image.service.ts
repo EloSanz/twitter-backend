@@ -22,9 +22,7 @@ export class ImageService {
         body: buffer,
         headers: { 'Content-Type': mimeType }
       })
-      if (!response.ok) {
-        throw new Error('Failed to upload image to S3')
-      }
+      if (!response.ok) { throw new Error('Failed to upload image to S3') }
       await this.repository.update(userId, key)
 
       return key

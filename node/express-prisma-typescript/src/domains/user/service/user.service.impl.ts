@@ -12,32 +12,36 @@ export class UserServiceImpl implements UserService {
     private readonly followerRepository: FollowerRepositoryImpl
   ) {}
 
-  async getUser (userId: any): Promise<UserViewDTO> {
+  async sumar (n1: number, n2: number): Promise<number> {
+    return n1 + n2
+  }
+
+  async getUser (userId: string): Promise<UserViewDTO> {
     const user = await this.repository.getById(userId)
     if (!user) throw new NotFoundException('user')
     return user
   }
 
-  async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserViewDTO[]> {
+  async getUserRecommendations (userId: string, options: OffsetPagination): Promise<UserViewDTO[]> {
     // TODO: make this return only users followed by users the original user follows
-    return await this.repository.getRecommendedUsersPaginated(options)
+    return await this.repository.getRecommendedUsersPaginated(userId, options)
   }
 
   async getByUsername (username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
     return await this.repository.getByUsername(username, options)
   }
 
-  async deleteUser (userId: any): Promise<void> {
+  async deleteUser (userId: string): Promise<void> {
     await this.repository.delete(userId)
   }
 
   // Task N° 2
   async setPublicPosts (userId: string): Promise<void> {
-    await this.repository.publicPosts(userId)
+    await this.repository.setPublicPosts(userId)
   }
 
   async setPrivatePosts (userId: string): Promise<void> {
-    await this.repository.privatePosts(userId)
+    await this.repository.setPrivatePosts(userId)
   }
 
   async isFollowing (followedId: string, followerId: string): Promise<boolean> {

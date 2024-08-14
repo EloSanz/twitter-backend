@@ -40,17 +40,37 @@ export class UserRepositoryImpl implements UserRepository {
     })
   }
 
-  async getRecommendedUsersPaginated (options: OffsetPagination): Promise<UserViewDTO[]> {
-    const users = await this.db.user.findMany({
-      take: options.limit ? options.limit : undefined,
-      skip: options.skip ? options.skip : undefined,
-      orderBy: [
-        {
-          id: 'asc'
-        }
-      ]
+  async getUserFollowing (userId: string): Promise<string[]> {
+    const followRecords = await this.db.follow.findMany({
+      where: { followerId: userId },
+      select: { followedId: true }
     })
-    return users.map((user) => new UserViewDTO(user))
+    return followRecords.map(record => record.followedId)
+  }
+
+  async getUsersFollowedByFollowingUsers (userIds: string[]): Promise<string[]> {
+    const followedUsersRecords = await this.db.follow.findMany({
+      where: { followerId: { in: userIds } },
+      select: { followedId: true },
+      distinct: ['followedId']
+    })
+    return followedUsersRecords.map(record => record.followedId)
+  }
+
+  async getRecommendedUsersPaginated (userId: string, options: OffsetPagination): Promise<UserViewDTO[]> {
+    const followingIds = await this.getUserFollowing(userId)
+    const followedByFollowingUserIds = await this.getUsersFollowedByFollowingUsers(followingIds)
+
+    const recommendedUserIds = followedByFollowingUserIds.filter(id => id !== userId)
+
+    const users = await this.db.user.findMany({
+      where: { id: { in: recommendedUserIds } },
+      skip: options.skip ? options.skip : undefined,
+      take: options.limit ? options.limit : undefined,
+      orderBy: { id: 'asc' }
+    })
+
+    return users.map(user => new UserViewDTO(user))
   }
 
   async getByUsername (username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
@@ -83,7 +103,7 @@ export class UserRepositoryImpl implements UserRepository {
     return user ? new ExtendedUserDTO(user) : null
   }
 
-  async publicPosts (userId: string): Promise<void> {
+  async setPublicPosts (userId: string): Promise<void> {
     await this.db.user.update({
       where: {
         id: userId
@@ -94,7 +114,7 @@ export class UserRepositoryImpl implements UserRepository {
     })
   }
 
-  async privatePosts (userId: string): Promise<void> {
+  async setPrivatePosts (userId: string): Promise<void> {
     await this.db.user.update({
       where: {
         id: userId

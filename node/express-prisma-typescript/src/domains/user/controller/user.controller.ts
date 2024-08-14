@@ -280,7 +280,7 @@ const upload = multer({ storage: multer.memoryStorage() })
 const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db),
   new ImageService(new UserRepositoryImpl(db)), new FollowerRepositoryImpl(db))
 
-userRouter.get('/', async (req: Request, res: Response) => {
+userRouter.get('/', async (req: Request, res: Response) => { // only retrieves recommendations
   const { userId } = res.locals.context
   const { limit, skip } = req.query as Record<string, string>
 
@@ -311,6 +311,7 @@ userRouter.get('/generate-upload-url', async (req: Request, res: Response) => {
 
   res.status(HttpStatus.OK).json({ uploadUrl })
 })
+
 userRouter.get('/:userId', async (req: Request, res: Response) => {
   const { userId: otherUserId } = req.params
   const { userId } = res.locals.context
@@ -320,6 +321,7 @@ userRouter.get('/:userId', async (req: Request, res: Response) => {
 
   return res.status(HttpStatus.OK).json({ user, following })
 })
+
 userRouter.get('/by_username/:username', async (req: Request, res: Response) => {
   const username: string = req.params.username
   const { limit, skip } = req.query as Record<string, string>
@@ -328,6 +330,7 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
 
   return res.status(HttpStatus.OK).json(users)
 })
+
 userRouter.delete('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 

@@ -21,7 +21,8 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@*": ["./*"]
+      "@*": ["./*"],
+      "@test/*": ["./test/*"]
     }
   },
   "lib": ["es2022"],

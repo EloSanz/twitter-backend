@@ -8,9 +8,9 @@
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module",
-    "project": ["tsconfig.json"]
+    "project": ["tsconfig.json", "jest.config.ts"]
   },
-  "ignorePatterns": ["public/chatClientFront.ts"],
+  "ignorePatterns": ["jest.config.ts"],
   "rules": {
     "@typescript-eslint/strict-boolean-expressions": [
       2,
