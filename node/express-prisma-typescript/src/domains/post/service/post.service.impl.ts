@@ -32,11 +32,9 @@ export class PostServiceImpl implements PostService {
 
     const isFollowing = await this.followRepository.isFollowing(userId, author.id)
 
-    if (author.publicPosts || isFollowing) {
-      return new PostDTO(post)
-    } else {
-      throw new NotFoundException('Post')
-    }
+    if (author.publicPosts || isFollowing) { return new PostDTO(post) }
+
+    throw new NotFoundException('Post')
   }
 
   async getLatestPosts (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
@@ -51,10 +49,8 @@ export class PostServiceImpl implements PostService {
 
     const isFollowing: boolean = await this.followRepository.isFollowing(userId, author.id)
 
-    if (!author.publicPosts && !isFollowing) {
-      throw new NotFoundException('The profile is private')
-    } else {
-      return posts
-    }
+    if (author.publicPosts || isFollowing) { return posts }
+
+    throw new NotFoundException('The profile is private')
   }
 }

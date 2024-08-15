@@ -7,4 +7,5 @@ export interface CommentRepository {
   createComment: (postId: string, userId: string, content: string) => Promise <CommentDto>
   getCommentsByPostId: (postId: string, options: CursorPagination) => Promise <ExtendedPostDTO[]>
   getCommentCount: (postId: string) => Promise <number>
+  existById: (postId: string) => Promise <boolean>
 }

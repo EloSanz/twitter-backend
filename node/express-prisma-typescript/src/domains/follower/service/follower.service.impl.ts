@@ -29,6 +29,8 @@ export class FollowerServiceImpl implements FollowerService {
   }
 
   async unfollow (followerId: string, followedId: string): Promise<void> {
+    if (followerId === followedId) { throw new ConflictException('Cannot unfollow yourself') }
+
     await this.ensureUserExists(followedId)
     await this.repository.unfollow(followerId, followedId)
   }

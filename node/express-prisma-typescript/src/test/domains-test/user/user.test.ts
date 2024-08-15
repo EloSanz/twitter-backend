@@ -1,34 +1,11 @@
-import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.repository.impl'
 import { UserViewDTO } from '@domains/user/dto'
-import { UserRepository } from '@domains/user/repository'
-import { ImageService } from '@domains/user/service/image.service'
 import { UserServiceImpl } from '@domains/user/service/user.service.impl'
+import { mockUserRepository, mockImageService, mockFollowerRepository } from '@test/utils'
 import { OffsetPagination } from '@types'
-import { NotFoundException } from '@utils'
+import { ConflictException, NotFoundException } from '@utils'
 
 describe('UserServiceImpl', () => {
   let userService: UserServiceImpl
-
-  const mockUserRepository: UserRepository = {
-    getById: jest.fn(),
-    getRecommendedUsersPaginated: jest.fn(),
-    getByUsername: jest.fn(),
-    delete: jest.fn(),
-    setPublicPosts: jest.fn(),
-    setPrivatePosts: jest.fn(),
-    existById: jest.fn()
-  } as unknown as UserRepository
-
-  const mockImageService: ImageService = {
-    getUserProfilePictureUrl: jest.fn(),
-    generateUploadUrl: jest.fn(),
-    generateDownloadUrl: jest.fn(),
-    uploadImageWithUrlAndKey: jest.fn()
-  } as unknown as ImageService
-
-  const mockFollowerRepository: FollowerRepositoryImpl = {
-    isFollowing: jest.fn()
-  } as unknown as FollowerRepositoryImpl
 
   beforeEach(() => {
     userService = new UserServiceImpl(
@@ -76,6 +53,25 @@ describe('UserServiceImpl', () => {
 
       await expect(userService.getUser('123')).rejects.toThrow(NotFoundException)
       expect(mockUserRepository.getById).toHaveBeenCalledWith('123')
+    })
+  })
+  describe('getUserRecommendations', () => {
+    const userId = 'user123'
+    const options: OffsetPagination = { skip: 0, limit: 10 }
+
+    beforeEach(() => {
+      (mockUserRepository.getRecommendedUsersPaginated as jest.Mock).mockReset()
+    })
+
+    it('should return an empty array if no recommendations are found', async () => {
+      const mockRecommendedUsers: UserViewDTO[] = [];
+
+      (mockUserRepository.getRecommendedUsersPaginated as jest.Mock).mockResolvedValue(mockRecommendedUsers)
+
+      const result = await userService.getUserRecommendations(userId, options)
+
+      expect(mockUserRepository.getRecommendedUsersPaginated).toHaveBeenCalledWith(userId, options)
+      expect(result).toEqual(mockRecommendedUsers)
     })
   })
   describe('getByUsername', () => {
@@ -146,6 +142,125 @@ describe('UserServiceImpl', () => {
 
       expect(mockUserRepository.setPrivatePosts).toHaveBeenCalledWith(userId)
       expect(user.publicPosts).toBe(false)
+    })
+  })
+  describe('isFollowing', () => {
+    it('should return true if the follower is following the followed user', async () => {
+      const followedId = 'followedUserId'
+      const followerId = 'followerUserId';
+
+      (mockFollowerRepository.isFollowing as jest.Mock).mockResolvedValue(true)
+
+      const result = await userService.isFollowing(followedId, followerId)
+
+      expect(result).toBe(true)
+      expect(mockFollowerRepository.isFollowing).toHaveBeenCalledWith(followerId, followedId)
+    })
+
+    it('should return false if the follower is not following the followed user', async () => {
+      const followedId = 'followedUserId'
+      const followerId = 'followerUserId';
+
+      (mockFollowerRepository.isFollowing as jest.Mock).mockResolvedValue(false)
+
+      const result = await userService.isFollowing(followedId, followerId)
+
+      expect(result).toBe(false)
+      expect(mockFollowerRepository.isFollowing).toHaveBeenCalledWith(followerId, followedId)
+    })
+
+    it('should throw ConflictException if a user tries to follow themselves', async () => {
+      const userId = 'userId'
+
+      await expect(userService.isFollowing(userId, userId)).rejects.toThrow(ConflictException)
+    })
+  })
+  describe('getUserProfilePictureUrl', () => {
+    it('should return the user profile picture URL if user exists', async () => {
+      const userId = 'userId'
+      const profilePictureUrl = 'http://example.com/pic.jpg';
+
+      (mockUserRepository.existById as jest.Mock).mockResolvedValue(true);
+      (mockImageService.getUserProfilePictureUrl as jest.Mock).mockResolvedValue(profilePictureUrl)
+
+      const result = await userService.getUserProfilePictureUrl(userId)
+
+      expect(result).toBe(profilePictureUrl)
+      expect(mockUserRepository.existById).toHaveBeenCalledWith(userId)
+      expect(mockImageService.getUserProfilePictureUrl).toHaveBeenCalledWith(userId)
+    })
+
+    it('should throw NotFoundException if user does not exist', async () => {
+      const userId = 'userId';
+
+      (mockUserRepository.existById as jest.Mock).mockResolvedValue(false)
+
+      await expect(userService.getUserProfilePictureUrl(userId)).rejects.toThrow(NotFoundException)
+      expect(mockUserRepository.existById).toHaveBeenCalledWith(userId)
+    })
+  })
+
+  describe('generateUploadUrl', () => {
+    it('should return upload URL and key', async () => {
+      const userId = 'userId'
+      const uploadUrl = 'http://example.com/upload'
+      const key = 'some-key';
+
+      (mockImageService.generateUploadUrl as jest.Mock).mockResolvedValue({ uploadUrl, key })
+
+      const result = await userService.generateUploadUrl(userId)
+
+      expect(result).toEqual({ uploadUrl, key })
+      expect(mockImageService.generateUploadUrl).toHaveBeenCalledWith(userId)
+    })
+  })
+
+  describe('generateDownloadUrl', () => {
+    it('should return the download URL for the given key', async () => {
+      const key = 'some-key'
+      const downloadUrl = 'http://example.com/download';
+
+      (mockImageService.generateDownloadUrl as jest.Mock).mockResolvedValue(downloadUrl)
+
+      const result = await userService.generateDownloadUrl(key)
+
+      expect(result).toBe(downloadUrl)
+      expect(mockImageService.generateDownloadUrl).toHaveBeenCalledWith(key)
+    })
+  })
+
+  describe('updateUserProfilePicture', () => {
+    it('should update user profile picture if user exists', async () => {
+      const userId = 'userId'
+      const key = 'some-key'
+      const uploadUrl = 'http://example.com/upload'
+      const buffer = Buffer.from('test')
+      const originalName = 'picture.jpg'
+      const mimeType = 'image/jpeg'
+      const updatedPictureUrl = 'http://example.com/pic.jpg';
+
+      (mockUserRepository.existById as jest.Mock).mockResolvedValue(true);
+      (mockImageService.uploadImageWithUrlAndKey as jest.Mock).mockResolvedValue(updatedPictureUrl)
+
+      const result = await userService.updateUserProfilePicture(userId, key, uploadUrl, buffer, originalName, mimeType)
+
+      expect(result).toBe(updatedPictureUrl)
+      expect(mockUserRepository.existById).toHaveBeenCalledWith(userId)
+      expect(mockImageService.uploadImageWithUrlAndKey).toHaveBeenCalledWith(userId, key, uploadUrl, buffer, originalName, mimeType)
+    })
+
+    it('should throw NotFoundException if user does not exist', async () => {
+      const userId = 'userId'
+      const key = 'some-key'
+      const uploadUrl = 'http://example.com/upload'
+      const buffer = Buffer.from('test')
+      const originalName = 'picture.jpg'
+      const mimeType = 'image/jpeg';
+
+      (mockUserRepository.existById as jest.Mock).mockResolvedValue(false)
+
+      await expect(userService.updateUserProfilePicture(userId, key, uploadUrl, buffer, originalName, mimeType)).rejects.toThrow(NotFoundException)
+      expect(mockUserRepository.existById).toHaveBeenCalledWith(userId)
     })
   })
 })

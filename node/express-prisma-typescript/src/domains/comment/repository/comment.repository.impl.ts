@@ -7,6 +7,14 @@ import { UserDTO } from '@domains/user/dto'
 
 export class CommentRepositoryImpl implements CommentRepository {
   constructor (private readonly db: PrismaClient) {}
+  async existById (postId: string): Promise <boolean> {
+    const count = await this.db.post.count({
+      where: {
+        id: postId
+      }
+    })
+    return count > 0
+  }
 
   async getCommentsByUserId (userId: string): Promise<CommentDto[]> {
     const posts = await this.db.post.findMany({

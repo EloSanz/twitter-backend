@@ -1,4 +1,4 @@
-import { NotFoundException } from '@utils/errors'
+import { ConflictException, NotFoundException } from '@utils/errors'
 import { OffsetPagination } from 'types'
 import { UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
@@ -45,6 +45,7 @@ export class UserServiceImpl implements UserService {
   }
 
   async isFollowing (followedId: string, followerId: string): Promise<boolean> {
+    if (followedId === followerId) { throw new ConflictException('You can not follow yourself') }
     return await this.followerRepository.isFollowing(followerId, followedId)
   }
 
