@@ -11,8 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: twitter
-
     services:
       postgres:
         image: postgres:alpine
