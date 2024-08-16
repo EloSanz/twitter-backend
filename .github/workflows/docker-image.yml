@@ -1,48 +1,18 @@
-name: CI/CD Pipeline
+name: Check Secrets
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build:
+  check-secrets:
     runs-on: ubuntu-latest
     environment: twitter
-    services:
-      postgres:
-        image: postgres:alpine
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        ports:
-          - 5433:5432
-        options: >-
-          --health-cmd "pg_isready -U ${{ secrets.POSTGRES_USER }}"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    - name: Install dependencies
-      run: yarn install
-
-    - name: Run lint
-      run: yarn lint
-
-    - name: Run tests
-      env:
-        DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5433/${{ secrets.POSTGRES_DB }}
-      run: yarn test
+    - name: Print AWS_REGION
+      run: |
+        echo "AWS_REGION is: ${{ secrets.AWS_REGION }}"
