@@ -8,57 +8,57 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-  username         String    @unique // Unique constraint
-  name             String?   @db.VarChar(35) // Limit display name to 35 characters
-  email            String    @unique // Unique constraint
-  password         String
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  deletedAt        DateTime? // Optional value
-  
-  profilePicture   String?
-  
-  posts            Post[]    @relation("UserPosts")
-  publicPosts      Boolean   @default(true)
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  username  String    @unique // Unique constraint
+  name      String?   @db.VarChar(35) // Limit display name to 35 characters
+  email     String    @unique // Unique constraint
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional value
 
-  follows          Follow[]  @relation(name: "follows")
-  followers        Follow[]  @relation(name: "followers")
-  
+  profilePicture String?
+
+  posts       Post[]  @relation("UserPosts")
+  publicPosts Boolean @default(true)
+
+  follows   Follow[] @relation(name: "follows")
+  followers Follow[] @relation(name: "followers")
+
   reactions        Reaction[]
-  sentMessages     Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  sentMessages     Message[]  @relation("SentMessages")
+  receivedMessages Message[]  @relation("ReceivedMessages")
 }
 
 model Follow {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-  followerId  String    @db.Uuid()
-  followedId  String    @db.Uuid()
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime? // Optional value
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  followerId String    @db.Uuid()
+  followedId String    @db.Uuid()
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime? // Optional value
 
-  follower    User      @relation(name: "follows", fields: [followerId], references: [id], onDelete: Cascade)
-  followed    User      @relation(name: "followers", fields: [followedId], references: [id], onDelete: Cascade)
+  follower User @relation(name: "follows", fields: [followerId], references: [id], onDelete: Cascade)
+  followed User @relation(name: "followers", fields: [followedId], references: [id], onDelete: Cascade)
 }
 
 model Post {
-  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-  authorId    String     @db.Uuid // Foreign Key
-  content     String     @db.VarChar(240) // Limit the content to 240 characters
-  images      String[]
-  postType    PostType  // Discriminates between POST and COMMENT
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deletedAt   DateTime?  // Optional value
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  authorId  String    @db.Uuid // Foreign Key
+  content   String    @db.VarChar(240) // Limit the content to 240 characters
+  images    String[]
+  postType  PostType // Discriminates between POST and COMMENT
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional value
 
-  author      User       @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
-  reactions   Reaction[]
+  author    User       @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  reactions Reaction[]
 
-  comments    Post[]     @relation("PostComments")
+  comments Post[]  @relation("PostComments")
   // Self-referential field for comments
-  parentId    String?    @db.Uuid
-  parent      Post?      @relation("PostComments", fields: [parentId], references: [id])
+  parentId String? @db.Uuid
+  parent   Post?   @relation("PostComments", fields: [parentId], references: [id])
 
   @@index([parentId]) // index for better performance on parentId
 }
@@ -69,13 +69,13 @@ enum PostType {
 }
 
 model Reaction {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  postId    String   @db.Uuid
-  userId    String   @db.Uuid
-  type      ReactionType
+  id     String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId String       @db.Uuid
+  userId String       @db.Uuid
+  type   ReactionType
 
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([postId, userId, type]) // a user can only react once per post per reaction type
 }
@@ -86,16 +86,16 @@ enum ReactionType {
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
-  senderId  String   @db.Uuid // Foreign key to User
-  receiverId String  @db.Uuid // Foreign key to User
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  status    MessageStatus @default(SENT) // Status of the message
+  id         Int           @id @default(autoincrement())
+  senderId   String        @db.Uuid // Foreign key to User
+  receiverId String        @db.Uuid // Foreign key to User
+  content    String
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  status     MessageStatus @default(SENT) // Status of the message
 
-  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
-  receiver  User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }
 
 enum MessageStatus {
