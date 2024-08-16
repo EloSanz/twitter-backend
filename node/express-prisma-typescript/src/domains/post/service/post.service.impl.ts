@@ -41,7 +41,7 @@ export class PostServiceImpl implements PostService {
     return await this.repository.getAllByDatePaginated(userId, options)
   }
 
-  async getPostsByUserId (userId: any, authorId: string): Promise<ExtendedPostDTO[]> {
+  async getPostsByUserId (userId: string, authorId: string): Promise<ExtendedPostDTO[]> {
     const author: UserViewDTO | null = await this.userRepository.getById(authorId)
     if (!author) throw new NotFoundException('Author')
 

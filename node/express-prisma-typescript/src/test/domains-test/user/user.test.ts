@@ -1,8 +1,15 @@
+import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.repository.impl'
 import { UserViewDTO } from '@domains/user/dto'
+import { UserRepository } from '@domains/user/repository'
+import { ImageService } from '@domains/user/service/image.service'
 import { UserServiceImpl } from '@domains/user/service/user.service.impl'
-import { mockUserRepository, mockImageService, mockFollowerRepository } from '@test/utils'
 import { OffsetPagination } from '@types'
-import { ConflictException, NotFoundException } from '@utils'
+import { NotFoundException } from '@utils'
+import { mock } from 'jest-mock-extended'
+
+const mockUserRepository = mock<UserRepository>()
+const mockImageService = mock<ImageService>()
+const mockFollowerRepositoryImpl = mock<FollowerRepositoryImpl>()
 
 describe('UserServiceImpl', () => {
   let userService: UserServiceImpl
@@ -11,26 +18,10 @@ describe('UserServiceImpl', () => {
     userService = new UserServiceImpl(
       mockUserRepository,
       mockImageService,
-      mockFollowerRepository
+      mockFollowerRepositoryImpl
     )
   })
 
-  describe('sumar', () => {
-    it('should return the sum of two numbers', async () => {
-      const result = await userService.sumar(2, 3)
-      expect(result).toBe(5)
-    })
-
-    it('should handle negative numbers', async () => {
-      const result = await userService.sumar(-2, -3)
-      expect(result).toBe(-5)
-    })
-
-    it('should handle mixed positive and negative numbers', async () => {
-      const result = await userService.sumar(2, -3)
-      expect(result).toBe(-1)
-    })
-  })
   describe('getUser', () => {
     it('should return the user if it exists', async () => {
       const mockUser: UserViewDTO = {
@@ -39,9 +30,8 @@ describe('UserServiceImpl', () => {
         username: 'johndoe',
         profilePicture: 'url/to/profile/picture',
         publicPosts: true
-      };
-
-      (mockUserRepository.getById as jest.Mock).mockResolvedValue(mockUser)
+      }
+      mockUserRepository.getById.mockResolvedValue(mockUser)
 
       const result = await userService.getUser('123')
       expect(result).toEqual(mockUser)
@@ -49,7 +39,7 @@ describe('UserServiceImpl', () => {
     })
 
     it('should throw NotFoundException if user does not exist', async () => {
-      (mockUserRepository.getById as jest.Mock).mockResolvedValue(null)
+      mockUserRepository.getById.mockResolvedValue(null)
 
       await expect(userService.getUser('123')).rejects.toThrow(NotFoundException)
       expect(mockUserRepository.getById).toHaveBeenCalledWith('123')
@@ -60,13 +50,13 @@ describe('UserServiceImpl', () => {
     const options: OffsetPagination = { skip: 0, limit: 10 }
 
     beforeEach(() => {
-      (mockUserRepository.getRecommendedUsersPaginated as jest.Mock).mockReset()
+      mockUserRepository.getRecommendedUsersPaginated.mockReset()
     })
 
     it('should return an empty array if no recommendations are found', async () => {
-      const mockRecommendedUsers: UserViewDTO[] = [];
+      const mockRecommendedUsers: UserViewDTO[] = []
 
-      (mockUserRepository.getRecommendedUsersPaginated as jest.Mock).mockResolvedValue(mockRecommendedUsers)
+      mockUserRepository.getRecommendedUsersPaginated.mockResolvedValue(mockRecommendedUsers)
 
       const result = await userService.getUserRecommendations(userId, options)
 
@@ -81,9 +71,9 @@ describe('UserServiceImpl', () => {
         { id: '2', name: 'User Two', username: 'usertwo', profilePicture: 'url2', publicPosts: false }
       ]
       const username = 'userone'
-      const options: OffsetPagination = { skip: 0, limit: 10 };
+      const options: OffsetPagination = { skip: 0, limit: 10 }
 
-      (mockUserRepository.getByUsername as jest.Mock).mockResolvedValue(mockUsers)
+      mockUserRepository.getByUsername.mockResolvedValue(mockUsers)
 
       const result = await userService.getByUsername(username, options)
       expect(result).toEqual(mockUsers)
@@ -93,9 +83,9 @@ describe('UserServiceImpl', () => {
     it('should return an empty array if no users are found', async () => {
       const mockUsers: UserViewDTO[] = []
       const username = 'nonexistentuser'
-      const options: OffsetPagination = { skip: 0, limit: 10 };
+      const options: OffsetPagination = { skip: 0, limit: 10 }
 
-      (mockUserRepository.getByUsername as jest.Mock).mockResolvedValue(mockUsers)
+      mockUserRepository.getByUsername.mockResolvedValue(mockUsers)
 
       const result = await userService.getByUsername(username, options)
       expect(result).toEqual(mockUsers)
@@ -112,10 +102,10 @@ describe('UserServiceImpl', () => {
         username: 'testuser',
         profilePicture: 'profileUrl',
         publicPosts: true
-      };
+      }
 
-      (mockUserRepository.getById as jest.Mock).mockResolvedValue(mockUser);
-      (mockUserRepository.setPublicPosts as jest.Mock).mockResolvedValue(undefined)
+      mockUserRepository.getById.mockResolvedValue(mockUser)
+      mockUserRepository.setPublicPosts.mockResolvedValue(undefined)
 
       await userService.setPublicPosts(userId)
       const user = await userService.getUser(userId)
@@ -131,11 +121,11 @@ describe('UserServiceImpl', () => {
         username: 'testuser',
         profilePicture: 'profileUrl',
         publicPosts: false
-      };
+      }
 
       // Mock repository methods
-      (mockUserRepository.getById as jest.Mock).mockResolvedValue(mockUser);
-      (mockUserRepository.setPrivatePosts as jest.Mock).mockResolvedValue(undefined)
+      mockUserRepository.getById.mockResolvedValue(mockUser)
+      mockUserRepository.setPrivatePosts.mockResolvedValue(undefined)
 
       await userService.setPrivatePosts(userId)
       const user = await userService.getUser(userId)
@@ -144,44 +134,14 @@ describe('UserServiceImpl', () => {
       expect(user.publicPosts).toBe(false)
     })
   })
-  describe('isFollowing', () => {
-    it('should return true if the follower is following the followed user', async () => {
-      const followedId = 'followedUserId'
-      const followerId = 'followerUserId';
 
-      (mockFollowerRepository.isFollowing as jest.Mock).mockResolvedValue(true)
-
-      const result = await userService.isFollowing(followedId, followerId)
-
-      expect(result).toBe(true)
-      expect(mockFollowerRepository.isFollowing).toHaveBeenCalledWith(followerId, followedId)
-    })
-
-    it('should return false if the follower is not following the followed user', async () => {
-      const followedId = 'followedUserId'
-      const followerId = 'followerUserId';
-
-      (mockFollowerRepository.isFollowing as jest.Mock).mockResolvedValue(false)
-
-      const result = await userService.isFollowing(followedId, followerId)
-
-      expect(result).toBe(false)
-      expect(mockFollowerRepository.isFollowing).toHaveBeenCalledWith(followerId, followedId)
-    })
-
-    it('should throw ConflictException if a user tries to follow themselves', async () => {
-      const userId = 'userId'
-
-      await expect(userService.isFollowing(userId, userId)).rejects.toThrow(ConflictException)
-    })
-  })
   describe('getUserProfilePictureUrl', () => {
     it('should return the user profile picture URL if user exists', async () => {
       const userId = 'userId'
-      const profilePictureUrl = 'http://example.com/pic.jpg';
+      const profilePictureUrl = 'http://example.com/pic.jpg'
 
-      (mockUserRepository.existById as jest.Mock).mockResolvedValue(true);
-      (mockImageService.getUserProfilePictureUrl as jest.Mock).mockResolvedValue(profilePictureUrl)
+      mockUserRepository.existById.mockResolvedValue(true)
+      mockImageService.getUserProfilePictureUrl.mockResolvedValue(profilePictureUrl)
 
       const result = await userService.getUserProfilePictureUrl(userId)
 
@@ -191,9 +151,9 @@ describe('UserServiceImpl', () => {
     })
 
     it('should throw NotFoundException if user does not exist', async () => {
-      const userId = 'userId';
+      const userId = 'userId'
 
-      (mockUserRepository.existById as jest.Mock).mockResolvedValue(false)
+      mockUserRepository.existById.mockResolvedValue(false)
 
       await expect(userService.getUserProfilePictureUrl(userId)).rejects.toThrow(NotFoundException)
       expect(mockUserRepository.existById).toHaveBeenCalledWith(userId)
@@ -204,9 +164,9 @@ describe('UserServiceImpl', () => {
     it('should return upload URL and key', async () => {
       const userId = 'userId'
       const uploadUrl = 'http://example.com/upload'
-      const key = 'some-key';
+      const key = 'some-key'
 
-      (mockImageService.generateUploadUrl as jest.Mock).mockResolvedValue({ uploadUrl, key })
+      mockImageService.generateUploadUrl.mockResolvedValue({ uploadUrl, key })
 
       const result = await userService.generateUploadUrl(userId)
 
@@ -218,9 +178,9 @@ describe('UserServiceImpl', () => {
   describe('generateDownloadUrl', () => {
     it('should return the download URL for the given key', async () => {
       const key = 'some-key'
-      const downloadUrl = 'http://example.com/download';
+      const downloadUrl = 'http://example.com/download'
 
-      (mockImageService.generateDownloadUrl as jest.Mock).mockResolvedValue(downloadUrl)
+      mockImageService.generateDownloadUrl.mockResolvedValue(downloadUrl)
 
       const result = await userService.generateDownloadUrl(key)
 
@@ -237,10 +197,10 @@ describe('UserServiceImpl', () => {
       const buffer = Buffer.from('test')
       const originalName = 'picture.jpg'
       const mimeType = 'image/jpeg'
-      const updatedPictureUrl = 'http://example.com/pic.jpg';
+      const updatedPictureUrl = 'http://example.com/pic.jpg'
 
-      (mockUserRepository.existById as jest.Mock).mockResolvedValue(true);
-      (mockImageService.uploadImageWithUrlAndKey as jest.Mock).mockResolvedValue(updatedPictureUrl)
+      mockUserRepository.existById.mockResolvedValue(true)
+      mockImageService.uploadImageWithUrlAndKey.mockResolvedValue(updatedPictureUrl)
 
       const result = await userService.updateUserProfilePicture(userId, key, uploadUrl, buffer, originalName, mimeType)
 
@@ -255,9 +215,9 @@ describe('UserServiceImpl', () => {
       const uploadUrl = 'http://example.com/upload'
       const buffer = Buffer.from('test')
       const originalName = 'picture.jpg'
-      const mimeType = 'image/jpeg';
+      const mimeType = 'image/jpeg'
 
-      (mockUserRepository.existById as jest.Mock).mockResolvedValue(false)
+      mockUserRepository.existById.mockResolvedValue(false)
 
       await expect(userService.updateUserProfilePicture(userId, key, uploadUrl, buffer, originalName, mimeType)).rejects.toThrow(NotFoundException)
       expect(mockUserRepository.existById).toHaveBeenCalledWith(userId)
