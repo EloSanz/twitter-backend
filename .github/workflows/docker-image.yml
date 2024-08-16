@@ -21,7 +21,7 @@ jobs:
         node-version: '20'
 
     - name: Install dependencies
-      working-directory: ./node/express-prisma-typescript
+      working-directory: ./node/express-prisma-typescript #
       run: yarn install
 
     - name: Run lint
