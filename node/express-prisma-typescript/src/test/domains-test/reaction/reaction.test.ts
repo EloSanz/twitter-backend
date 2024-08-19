@@ -50,7 +50,7 @@ describe('ReactionServiceImpl', () => {
       const postId = 'postId'
       const type: ReactionType = ReactionType.LIKE
 
-      mockPostRepository.existById.mockResolvedValue(false)
+      mockPostRepository.existById.mockResolvedValue(true) // test repo
 
       await expect(reactionService.addReaction(userId, postId, type))
         .rejects
