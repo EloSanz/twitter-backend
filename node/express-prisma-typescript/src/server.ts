@@ -44,3 +44,4 @@ const io = setupSocketIO(listening)
 
 app.set('socketio', io)
 // test 2
+Logger.info(`Database URL: ${process.env.DATABASE_URL}`)
