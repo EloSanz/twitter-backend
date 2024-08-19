@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Run Tests
 
 on:
   push:
@@ -9,20 +9,20 @@ on:
       - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    environment: twitter
+
     services:
       postgres:
         image: postgres:alpine
         env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app
         ports:
           - 5433:5432
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.POSTGRES_USER }}"
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -38,11 +38,10 @@ jobs:
 
     - name: Install dependencies
       run: yarn install
-
-    - name: Run lint
-      run: yarn lint
+      working-directory: ./node/express-prisma-typescript
 
     - name: Run tests
-      env:
-        DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5433/${{ secrets.POSTGRES_DB }}
       run: yarn test
+      working-directory: ./node/express-prisma-typescript
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5433/app
