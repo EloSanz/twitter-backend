@@ -2,7 +2,6 @@ import express from 'express'
 import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import * as process from 'node:process'
 
 import { Constants, NodeEnv, Logger } from '@utils'
 import { router } from '@router'
@@ -13,7 +12,6 @@ import { setupSocketIO } from '@domains/messages/socket'
 import path from 'path'
 
 const app = express()
-Logger.info(`Database URL: ${process.env.DATABASE_URL ?? ''}`)
 
 if (Constants.NODE_ENV === NodeEnv.DEV) {
   app.use(morgan('tiny')) // Log requests only in development environments
@@ -45,4 +43,3 @@ const listening = app.listen(Constants.PORT, () => {
 const io = setupSocketIO(listening)
 
 app.set('socketio', io)
-// test 2
