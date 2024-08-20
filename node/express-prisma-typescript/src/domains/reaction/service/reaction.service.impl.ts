@@ -22,7 +22,7 @@ export class ReactionServiceImpl implements ReactionService {
   }
 
   async removeReaction (userId: string, postId: string, type: ReactionType): Promise<void> {
-    if (!isValidReactionType(type)) { throw new ConflictException('Invalid reaction type') }
+    if (!isValidReactionType(type)) { throw new ConflictException('Invalid reaction type:') }
 
     await this.repository.removeReaction(postId, userId, type)
   }

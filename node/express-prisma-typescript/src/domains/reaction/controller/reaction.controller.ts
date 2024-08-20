@@ -71,6 +71,8 @@
  *         description: Unauthorized
  *       404:
  *         description: Post not found
+ *       409:
+ *         description: Invalid Reaction Type | Reaction of type already exists
  *   delete:
  *     tags:
  *       - Reactions
@@ -177,6 +179,7 @@ import { ReactionServiceImpl } from '../service/reaction.service.impl'
 import { AddReactionDto, ReactionDto, RemoveReactionDto } from '../dto/reactionDto'
 import { PostRepositoryImpl } from '@domains/post/repository'
 import { UserRepositoryImpl } from '@domains/user/repository'
+import 'express-async-errors'
 
 export const reactionRouter = Router()
 
