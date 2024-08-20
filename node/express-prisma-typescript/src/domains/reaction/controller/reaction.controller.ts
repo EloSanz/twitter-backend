@@ -187,7 +187,7 @@ reactionRouter.post('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
   const { type }: AddReactionDto = req.body
-
+  console.log(type)
   const reaction: ReactionDto = await service.addReaction(userId, postId, type)
   return res.status(HttpStatus.CREATED).json({ message: 'Reaction added successfully', reaction })
 })
