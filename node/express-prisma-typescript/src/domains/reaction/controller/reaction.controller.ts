@@ -40,6 +40,7 @@
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
  *       - name: reaction
  *         in: body
  *         description: Reaction details
