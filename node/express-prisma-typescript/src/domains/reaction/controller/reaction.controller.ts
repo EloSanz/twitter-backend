@@ -41,18 +41,15 @@
  *         schema:
  *           type: string
  *     requestBody:
- *       - name: reaction
- *         in: body
- *         description: Reaction details
- *         required: true
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 type:
- *                   type: string
- *                   enum: [LIKE, RETWEET]
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [LIKE, RETWEET]
  *     responses:
  *       201:
  *         description: Reaction added successfully
@@ -188,7 +185,7 @@ reactionRouter.post('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
   const { type } = req.body
-  console.log('deleting: ', type)
+  console.log('adding: ', type)
   const reaction: ReactionDto = await service.addReaction(userId, postId, type)
   return res.status(HttpStatus.CREATED).json({ message: 'Reaction added successfully', reaction })
 })
