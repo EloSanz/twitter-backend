@@ -2,7 +2,6 @@
 import swaggerJsDoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 import { Express } from 'express'
-import { Constants } from '@utils'
 
 export function setupSwagger (app: Express): void {
   const swaggerOptions = {
@@ -15,7 +14,7 @@ export function setupSwagger (app: Express): void {
       },
       servers: [
         {
-          url: `https://twitter-backend.up.railway.app:${Constants.PORT || 3000}`,
+          url: 'https://twitter-backend.up.railway.app',
           description: 'Railway server'
         }
       ],
