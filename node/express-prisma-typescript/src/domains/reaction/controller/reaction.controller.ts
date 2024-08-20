@@ -51,9 +51,7 @@
  *               properties:
  *                 type:
  *                   type: string
- *                   enum:
- *                     - LIKE
- *                     - RETWEET
+ *                   enum: ["LIKE", "RETWEET"]
  *     responses:
  *       201:
  *         description: Reaction added successfully
