@@ -81,20 +81,16 @@
  *         required: true
  *         schema:
  *           type: string
- *       - name: reaction
- *         in: body
- *         description: Reaction details
- *         required: true
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 type:
- *                   type: string
- *                   enum:
- *                     - LIKE
- *                     - RETWEET
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [LIKE, RETWEET]
  *     responses:
  *       204:
  *         description: Reaction deleted successfully
