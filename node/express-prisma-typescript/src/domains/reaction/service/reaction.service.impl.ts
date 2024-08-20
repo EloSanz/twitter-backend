@@ -14,14 +14,14 @@ export class ReactionServiceImpl implements ReactionService {
     private readonly userRepository: UserRepository
   ) {}
 
-  async addReaction (userId: string, postId: string, type: ReactionType): Promise<ReactionDto> {
-    if (!isValidReactionType(type)) { throw new ConflictException('Invalid reaction type') }
+  async addReaction (userId: string, postId: string, type: string): Promise<ReactionDto> {
+    if (!isValidReactionType(type)) { throw new ConflictException('Invalid reaction type: ' + type) }
     const postExists: boolean = await this.postRepository.existById(postId)
     if (!postExists) { throw new NotFoundException('Post') }
     return await this.repository.addReaction(postId, userId, type)
   }
 
-  async removeReaction (userId: string, postId: string, type: ReactionType): Promise<void> {
+  async removeReaction (userId: string, postId: string, type: string): Promise<void> {
     if (!isValidReactionType(type)) { throw new ConflictException('Invalid reaction type:') }
 
     await this.repository.removeReaction(postId, userId, type)

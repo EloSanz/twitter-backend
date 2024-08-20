@@ -175,7 +175,7 @@ import { ReactionService } from '../service/reaction.service'
 import { db } from '@utils'
 import { ReactionRepositoryImpl } from '../repository/reaction.repository.impl'
 import { ReactionServiceImpl } from '../service/reaction.service.impl'
-import { AddReactionDto, ReactionDto, RemoveReactionDto } from '../dto/reactionDto'
+import { ReactionDto } from '../dto/reactionDto'
 import { PostRepositoryImpl } from '@domains/post/repository'
 import { UserRepositoryImpl } from '@domains/user/repository'
 import 'express-async-errors'
@@ -187,8 +187,8 @@ const service: ReactionService = new ReactionServiceImpl(new ReactionRepositoryI
 reactionRouter.post('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
-  const { type }: AddReactionDto = req.body
-  console.log(type)
+  const { type } = req.body
+  console.log('deleting: ', type)
   const reaction: ReactionDto = await service.addReaction(userId, postId, type)
   return res.status(HttpStatus.CREATED).json({ message: 'Reaction added successfully', reaction })
 })
@@ -196,10 +196,11 @@ reactionRouter.post('/:postId', async (req: Request, res: Response) => {
 reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
-  const { type }: RemoveReactionDto = req.body
+  const { type } = req.body
+  console.log('deleting: ', type)
 
   await service.removeReaction(userId, postId, type)
-  return res.status(HttpStatus.NO_CONTENT).json({ message: `Reaction ${type} deleted successfully` })
+  return res.status(HttpStatus.NO_CONTENT).json({ message: 'Reaction deleted successfully: ', type })
 })
 reactionRouter.get('/likes/:userId', async (req: Request, res: Response) => {
   const { userId } = req.params
