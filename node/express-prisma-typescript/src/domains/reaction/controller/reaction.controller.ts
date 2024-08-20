@@ -44,14 +44,16 @@
  *         in: body
  *         description: Reaction details
  *         required: true
- *         schema:
- *           type: object
- *           properties:
- *             type:
- *               type: string
- *               enum:
- *                 - LIKE
- *                 - RETWEET
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 type:
+ *                   type: string
+ *                   enum:
+ *                     - LIKE
+ *                     - RETWEET
  *     responses:
  *       201:
  *         description: Reaction added successfully
@@ -85,14 +87,16 @@
  *         in: body
  *         description: Reaction details
  *         required: true
- *         schema:
- *           type: object
- *           properties:
- *             type:
- *               type: string
- *               enum:
- *                 - LIKE
- *                 - RETWEET
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 type:
+ *                   type: string
+ *                   enum:
+ *                     - LIKE
+ *                     - RETWEET
  *     responses:
  *       204:
  *         description: Reaction deleted successfully
