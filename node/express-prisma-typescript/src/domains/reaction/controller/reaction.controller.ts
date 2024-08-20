@@ -4,7 +4,27 @@
  *   name: Reactions
  *   description: Reaction Management
  */
-
+/**
+ * @swagger
+ * definitions:
+ *   ReactionDto:
+ *     type: object
+ *     properties:
+ *       id:
+ *         type: string
+ *         example: e74a7b80-1657-4c38-b7e1-8a6b7d7b7c28
+ *       postId:
+ *         type: string
+ *         example: a5d6f3b8-65d6-4c1d-bbc3-587c41878e0e
+ *       userId:
+ *         type: string
+ *         example: b5e2a4c5-34e9-4e79-9d3e-31b4fd783c98
+ *       type:
+ *         type: string
+ *         enum:
+ *           - LIKE
+ *           - RETWEET
+ */
 /**
  * @swagger
  * /api/reaction/{postId}:
@@ -142,28 +162,6 @@
  *         description: Unauthorized
  *       404:
  *         description: User not found
- */
-
-/**
- * @swagger
- * definitions:
- *   ReactionDto:
- *     type: object
- *     properties:
- *       id:
- *         type: string
- *         example: e74a7b80-1657-4c38-b7e1-8a6b7d7b7c28
- *       postId:
- *         type: string
- *         example: a5d6f3b8-65d6-4c1d-bbc3-587c41878e0e
- *       userId:
- *         type: string
- *         example: b5e2a4c5-34e9-4e79-9d3e-31b4fd783c98
- *       type:
- *         type: string
- *         enum:
- *           - LIKE
- *           - RETWEET
  */
 
 import { Router, Request, Response } from 'express'
