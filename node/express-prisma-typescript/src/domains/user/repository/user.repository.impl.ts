@@ -33,11 +33,30 @@ export class UserRepositoryImpl implements UserRepository {
   }
 
   async delete (userId: string): Promise<void> {
-    await this.db.user.delete({
-      where: {
-        id: userId
+    try {
+      const userWithMessages = await this.db.user.findUnique({
+        where: { id: userId },
+        include: { sentMessages: true, receivedMessages: true }
+      })
+
+      if (userWithMessages && (userWithMessages.sentMessages.length > 0 || userWithMessages.receivedMessages.length > 0)) {
+        await this.db.message.deleteMany({
+          where: { senderId: userId }
+        })
+        await this.db.message.deleteMany({
+          where: { receiverId: userId }
+        })
       }
-    })
+
+      await this.db.user.delete({
+        where: {
+          id: userId
+        }
+      })
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      throw error
+    }
   }
 
   async getUserFollowing (userId: string): Promise<string[]> {
