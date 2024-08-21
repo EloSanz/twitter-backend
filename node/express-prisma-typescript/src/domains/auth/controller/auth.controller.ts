@@ -86,7 +86,7 @@
  *                    description: Not found. Couldn't find user
  *       500:
  *         description: Internal server error
- */
+*/
 
 /**
  * @swagger
