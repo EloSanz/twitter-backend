@@ -78,12 +78,12 @@
  *         description: User not found
  *          content:
  *            application/json:
- *            schema:
- *             type: object
- *             properties:
- *              message:
- *                type: string
- *                description: Not found. Couldn't find user"
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    description: Not found. Couldn't find user
  *       500:
  *         description: Internal server error
  */
