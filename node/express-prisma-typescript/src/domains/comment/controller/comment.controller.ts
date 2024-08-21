@@ -98,7 +98,9 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/CommentDto'
- */
+ *       401:
+ *         description: Unauthorized
+*/
 
 /**
  * @swagger
@@ -135,6 +137,8 @@
  *                   description: Success message
  *                 comment:
  *                   $ref: '#/components/schemas/CommentDto'
+ *       401:
+ *         description: Unauthorized
  */
 
 /**
@@ -176,7 +180,9 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/ExtendedPostDTO'
- */
+ *       401:
+ *         description: Unauthorized
+*/
 
 /**
  * @swagger
@@ -199,6 +205,8 @@
  *             schema:
  *               type: integer
  *               example: 15
+ *       401:
+ *         description: Unauthorized
  */
 import { db } from '@utils'
 import { Router, Request, Response } from 'express'

@@ -165,7 +165,7 @@
 import { Router, Request, Response } from 'express'
 import HttpStatus from 'http-status'
 import { ReactionService } from '../service/reaction.service'
-import { db } from '@utils'
+import { db, Logger } from '@utils'
 import { ReactionRepositoryImpl } from '../repository/reaction.repository.impl'
 import { ReactionServiceImpl } from '../service/reaction.service.impl'
 import { ReactionDto } from '../dto/reactionDto'
@@ -181,7 +181,8 @@ reactionRouter.post('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
   const { type } = req.body
-  console.log('adding: ', type)
+  Logger.info('adding: ', type)
+
   const reaction: ReactionDto = await service.addReaction(userId, postId, type)
   return res.status(HttpStatus.CREATED).json({ message: 'Reaction added successfully', reaction })
 })
@@ -190,7 +191,7 @@ reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
   const { type } = req.body
-  console.log('deleting: ', type)
+  Logger.info('deleting: ', type)
 
   await service.removeReaction(userId, postId, type)
   return res.status(HttpStatus.NO_CONTENT).json({ message: 'Reaction deleted successfully: ', type })

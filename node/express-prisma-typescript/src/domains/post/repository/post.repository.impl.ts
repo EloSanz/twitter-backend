@@ -40,7 +40,7 @@ export class PostRepositoryImpl implements PostRepository {
     })
 
     const extendedPosts = await Promise.all(posts.map(async post => {
-      const author = await this.getAuthor(post.authorId)
+      const author = await this.getAuthor(post.authorId) // include and verify if is following or has public posts
       const qtyComments = await this.getCommentCount(post.id)
       const qtyLikes = await this.getReactionCount(post.id, ReactionType.LIKE)
       const qtyRetweets = await this.getReactionCount(post.id, ReactionType.RETWEET)

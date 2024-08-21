@@ -171,6 +171,8 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/ExtendedPostDTO'
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -191,6 +193,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ExtendedPostDTO'
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -207,6 +211,8 @@
  *     responses:
  *       200:
  *         description: Post deleted successfully
+ *       401:
+ *         description: Unauthorized
  */
 import { Request, Response, Router } from 'express'
 import HttpStatus from 'http-status'

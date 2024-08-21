@@ -141,7 +141,22 @@ export class UserRepositoryImpl implements UserRepository {
           { email },
           { username }
         ],
-        deletedAt: null
+        deletedAt: null // register is not verifying if user is deleted
+      }
+    })
+    return user ? new ExtendedUserDTO(user) : null
+  }
+
+  async getByEmailOrUsernameRegister (email?: string, username?: string): Promise<ExtendedUserDTO | null> {
+    const user = await this.db.user.findFirst({
+      where: {
+        AND: {
+          deletedAt: null, // verify
+          OR: [
+            { email },
+            { username }
+          ]
+        }
       }
     })
     return user ? new ExtendedUserDTO(user) : null

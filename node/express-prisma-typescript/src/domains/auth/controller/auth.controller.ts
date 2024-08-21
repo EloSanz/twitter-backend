@@ -57,8 +57,7 @@
  *             example1:
  *               summary: Example request for login
  *               value:
- *                 email: "eliseo@gmail.com"
- *                 username: "elito"
+ *                 email: "elito@gmail.com"
  *                 password: "StrongPassword123@"
  *     responses:
  *       200:

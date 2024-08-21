@@ -55,6 +55,8 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/UserViewDTO'
+ *       401:
+ *         description: Unauthorized
  */
 
 /**
@@ -89,6 +91,8 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/UserViewDTO'
+ *       401:
+ *         description: Unauthorized
  */
 
 /**
@@ -104,6 +108,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/UserViewDTO'
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -122,6 +128,8 @@
  *                 url:
  *                   type: string
  *                   description: URL of the profile picture
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Profile picture not found
  */
@@ -145,6 +153,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/UserViewDTO'
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -155,6 +165,8 @@
  *     responses:
  *       200:
  *         description: User successfully deleted
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -165,6 +177,8 @@
  *     responses:
  *       200:
  *         description: User posts set to public
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -175,6 +189,8 @@
  *     responses:
  *       200:
  *         description: User posts set to private
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -200,6 +216,8 @@
  *                 downloadUrl:
  *                   type: string
  *                   description: Signed URL to download the image
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -218,6 +236,8 @@
  *                 uploadUrl:
  *                   type: string
  *                   description: URL to upload the image directly to S3
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -257,6 +277,8 @@
  *                   description: Key of the uploaded image
  *       400:
  *         description: Bad request, missing upload URL or image
+ *       401:
+ *        description: Unauthorized
  *       500:
  *         description: Internal server error
  */

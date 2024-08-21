@@ -23,6 +23,8 @@
  *         description: Successfully followed user
  *       400:
  *         description: Bad request
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Internal server error
  */
@@ -45,6 +47,8 @@
  *         description: Successfully unfollowed user
  *       400:
  *         description: Bad request
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Internal server error
  */
@@ -66,6 +70,8 @@
  *                 type: string
  *       400:
  *         description: Bad request
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Internal server error
  */
@@ -94,6 +100,8 @@
  *                     description: The name of the follower
  *       400:
  *         description: Bad request
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Internal server error
  */

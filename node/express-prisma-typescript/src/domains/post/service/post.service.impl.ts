@@ -45,11 +45,9 @@ export class PostServiceImpl implements PostService {
     const author: UserViewDTO | null = await this.userRepository.getById(authorId)
     if (!author) throw new NotFoundException('Author')
 
-    const posts: ExtendedPostDTO[] = await this.repository.getByUserId(authorId)
-
     const isFollowing: boolean = await this.followRepository.isFollowing(userId, author.id)
 
-    if (author.publicPosts || isFollowing) { return posts }
+    if (author.publicPosts || isFollowing) { return await this.repository.getByUserId(authorId) }
 
     throw new NotFoundException('The profile is private')
   }
