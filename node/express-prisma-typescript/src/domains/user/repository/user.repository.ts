@@ -10,7 +10,7 @@ export interface UserRepository {
   getRecommendedUsersPaginated: (userId: string, options: OffsetPagination) => Promise<UserViewDTO[]>
   getById: (userId: string) => Promise<UserViewDTO | null>
   getByEmailOrUsername: (email?: string, username?: string) => Promise<ExtendedUserDTO | null>
-  getByEmailOrUsernameRegister: (email?: string, username?: string) => Promise<ExtendedUserDTO | null>
+  // getByEmailOrUsernameRegister: (email?: string, username?: string) => Promise<ExtendedUserDTO | null>
   getByUsername: (username: string, options: OffsetPagination) => Promise<UserViewDTO[]>
   // Task N° 2
   getPublicPostAuthors: () => Promise<string[]>
