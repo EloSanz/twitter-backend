@@ -10,6 +10,7 @@ import {
 
 import { LoginInputDTO, SignupInputDTO, TokenDTO } from '../dto'
 import { AuthService } from './auth.service'
+import { Prisma } from '@prisma/client'
 
 export class AuthServiceImpl implements AuthService {
   constructor (private readonly repository: UserRepository) {}
@@ -20,10 +21,19 @@ export class AuthServiceImpl implements AuthService {
 
     const encryptedPassword = await encryptPassword(data.password)
 
-    const user = await this.repository.create({ ...data, password: encryptedPassword })
-    const token = generateAccessToken({ userId: user.id })
+    try {
+      const user = await this.repository.create({ ...data, password: encryptedPassword })
+      const token = generateAccessToken({ userId: user.id })
 
-    return { token }
+      return { token }
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException('USER_ALREADY_EXISTS')
+        }
+      }
+      throw error
+    }
   }
 
   async login (data: LoginInputDTO): Promise<TokenDTO> {

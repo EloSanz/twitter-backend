@@ -30,15 +30,10 @@ export class MessageRepositoryImpl implements MessageRepository {
     return await this.db.message.findMany({
       where: {
         OR: [
-          {
-            senderId,
-            receiverId
-          },
-          {
-            senderId: receiverId,
-            receiverId: senderId
-          }
-        ]
+          { senderId, receiverId },
+          { senderId: receiverId, receiverId: senderId }
+        ],
+        deletedAt: null
       },
       orderBy: {
         createdAt: 'asc'
@@ -47,18 +42,27 @@ export class MessageRepositoryImpl implements MessageRepository {
   }
 
   async getMessages (): Promise<Message[]> {
-    return await this.db.message.findMany()
+    return await this.db.message.findMany({
+      where: { deletedAt: null }
+    })
   }
 
   async getMessageById (id: number): Promise<Message | null> {
     return await this.db.message.findUnique({
+      where: { id, deletedAt: null }
+    })
+  }
+
+  async deleteMessage (id: number): Promise<void> {
+    await this.db.message.delete({
       where: { id }
     })
   }
 
-  async deleteMessage (id: number): Promise<Message> {
-    return await this.db.message.delete({
-      where: { id }
+  async softDeleteMessage (messageId: number): Promise<void> {
+    await this.db.message.update({
+      where: { id: messageId },
+      data: { deletedAt: new Date() }
     })
   }
 

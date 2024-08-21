@@ -18,8 +18,12 @@ export class MessageServiceImpl implements MessageService {
     return await this.messageRepo.getMessageById(id)
   }
 
-  async deleteMessage (id: number): Promise<Message> {
-    return await this.messageRepo.deleteMessage(id)
+  async softDeleteMessage (id: number): Promise<void> {
+    await this.messageRepo.softDeleteMessage(id)
+  }
+
+  async deleteMessage (id: number): Promise<void> {
+    await this.messageRepo.deleteMessage(id)
   }
 
   async updateMessageStatus (id: number, status: MessageStatus): Promise<Message> {

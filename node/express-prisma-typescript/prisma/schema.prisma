@@ -92,6 +92,7 @@ model Message {
   content    String
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
+  deletedAt DateTime?
   status     MessageStatus @default(SENT) // Status of the message
 
   sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)

@@ -26,10 +26,22 @@ export class UserRepositoryImpl implements UserRepository {
   async getById (userId: string): Promise<UserViewDTO | null> {
     const user = await this.db.user.findUnique({
       where: {
-        id: userId
+        id: userId,
+        deletedAt: null
       }
     })
     return user ? new UserViewDTO(user) : null
+  }
+
+  async softDelete (userId: string): Promise<void> {
+    await this.db.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        deletedAt: new Date()
+      }
+    })
   }
 
   async delete (userId: string): Promise<void> {
@@ -100,7 +112,8 @@ export class UserRepositoryImpl implements UserRepository {
         username: {
           contains: username,
           mode: 'insensitive'
-        }
+        },
+        deletedAt: null
       }
     })
     return users.map((user) => new UserViewDTO(user))
@@ -110,13 +123,10 @@ export class UserRepositoryImpl implements UserRepository {
     const user = await this.db.user.findFirst({
       where: {
         OR: [
-          {
-            email
-          },
-          {
-            username
-          }
-        ]
+          { email },
+          { username }
+        ],
+        deletedAt: null
       }
     })
     return user ? new ExtendedUserDTO(user) : null
@@ -168,7 +178,8 @@ export class UserRepositoryImpl implements UserRepository {
   async existById (userId: string): Promise<boolean> {
     const count = await this.db.user.count({
       where: {
-        id: userId
+        id: userId,
+        deletedAt: null
       }
     })
     return count > 0

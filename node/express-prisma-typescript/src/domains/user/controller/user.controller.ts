@@ -334,9 +334,9 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
 userRouter.delete('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
-  await service.deleteUser(userId)
+  await service.softDeleteUser(userId)
 
-  return res.status(HttpStatus.OK)
+  return res.status(HttpStatus.OK).send({ message: 'User soft deleted successfully' })
 })
 
 userRouter.put('/set-public-posts', async (req: Request, res: Response) => {

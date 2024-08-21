@@ -6,7 +6,8 @@ export interface MessageService {
   createMessage: (newMessage: CreateMessageDto) => Promise<Message>
   getMessages: () => Promise<Message[]>
   getMessageById: (id: number) => Promise<Message | null>
-  deleteMessage: (id: number) => Promise<Message>
+  deleteMessage: (id: number) => Promise<void>
+  softDeleteMessage: (id: number) => Promise<void>
   updateMessageStatus: (id: number, status: MessageStatus) => Promise<Message>
   getMessagesBetweenUsers: (senderId: string, receiverId: string) => Promise<Message[]>
 

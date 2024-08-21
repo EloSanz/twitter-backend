@@ -2,6 +2,7 @@ import { OffsetPagination } from '@types'
 import { UserViewDTO } from '../dto'
 
 export interface UserService {
+  softDeleteUser: (userId: string) => Promise<void>
   getUserProfilePictureUrl: (userId: string) => Promise<string | null>
   getUser: (userId: string) => Promise<UserViewDTO>
   getUserRecommendations: (userId: string, options: OffsetPagination) => Promise<UserViewDTO[]>

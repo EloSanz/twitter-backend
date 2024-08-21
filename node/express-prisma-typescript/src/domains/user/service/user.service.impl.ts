@@ -12,6 +12,10 @@ export class UserServiceImpl implements UserService {
     private readonly followerRepository: FollowerRepositoryImpl
   ) {}
 
+  async softDeleteUser (userId: string): Promise<void> {
+    await this.repository.softDelete(userId)
+  }
+
   async sumar (n1: number, n2: number): Promise<number> {
     return n1 + n2
   }
