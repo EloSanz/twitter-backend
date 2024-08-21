@@ -42,6 +42,21 @@ export class UserRepositoryImpl implements UserRepository {
         deletedAt: new Date()
       }
     })
+    const userWithMessages = await this.db.user.findUnique({
+      where: { id: userId },
+      include: { sentMessages: true, receivedMessages: true }
+    })
+
+    if (userWithMessages && (userWithMessages.sentMessages.length > 0 || userWithMessages.receivedMessages.length > 0)) {
+      await this.db.message.updateMany({
+        where: { senderId: userId },
+        data: { deletedAt: new Date() }
+      })
+      await this.db.message.updateMany({
+        where: { receiverId: userId },
+        data: { deletedAt: new Date() }
+      })
+    }
   }
 
   async delete (userId: string): Promise<void> {
