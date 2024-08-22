@@ -3,7 +3,6 @@ import { CommentDto } from '../dto/comment.dto'
 import { CommentRepository } from './comment.repository'
 import { ExtendedPostDTO, PostDTO } from '@domains/post/dto'
 import { CursorPagination } from '@types'
-import { UserDTO } from '@domains/user/dto'
 
 export class CommentRepositoryImpl implements CommentRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -20,8 +19,10 @@ export class CommentRepositoryImpl implements CommentRepository {
     const comments = await this.db.post.findMany({
       where: {
         authorId: userId,
-        postType: PostType.COMMENT
-      }
+        postType: PostType.COMMENT,
+        author: { deletedAt: null }
+      },
+      include: { author: true }
     })
 
     return comments.map((comment) => new CommentDto(comment.id, comment.authorId, comment.content))
@@ -47,6 +48,10 @@ export class CommentRepositoryImpl implements CommentRepository {
         postType: PostType.COMMENT,
         parentId: postId
       },
+      include: {
+        reactions: true,
+        author: true
+      },
       cursor: options.after ? { id: options.after } : undefined,
       skip: options.after ? 1 : undefined,
       take: options.limit ? options.limit : undefined,
@@ -62,25 +67,11 @@ export class CommentRepositoryImpl implements CommentRepository {
       content: comment.content,
       images: comment.images,
       createdAt: comment.createdAt,
-      author: await this.getAuthor(comment.authorId),
+      author: comment.author,
       qtyComments: await this.getCommentCount(comment.id),
-      qtyLikes: await this.getReactionCount(comment.id, ReactionType.LIKE),
-      qtyRetweets: await this.getReactionCount(comment.id, ReactionType.RETWEET)
+      qtyLikes: comment.reactions.filter(reaction => reaction.type === ReactionType.LIKE).length,
+      qtyRetweets: comment.reactions.filter(reaction => reaction.type === ReactionType.RETWEET).length
     })))
-  }
-
-  async getAuthor (authorId: string): Promise<UserDTO> {
-    const user = await this.db.user.findUnique({
-      where: { id: authorId }
-    })
-
-    return new UserDTO({
-      id: user?.id ?? '',
-      name: user?.name ?? null,
-      createdAt: user?.createdAt ?? new Date(),
-      publicPosts: user?.publicPosts ?? false,
-      profileImage: user?.profilePicture
-    })
   }
 
   async getCommentCount (postId: string): Promise<number> {
