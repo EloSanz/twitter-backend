@@ -29,11 +29,11 @@ export class PostServiceImpl implements PostService {
 
     const author: UserViewDTO | null = await this.userRepository.getById(post.authorId)
     if (!author) throw new NotFoundException('Author')
+    if (userId === post.authorId) { return new PostDTO(post) }
 
     const isFollowing = await this.followRepository.isFollowing(userId, author.id)
 
     if (author.publicPosts || isFollowing) { return new PostDTO(post) }
-
     throw new NotFoundException('Post')
   }
 
@@ -49,6 +49,7 @@ export class PostServiceImpl implements PostService {
     const author: UserViewDTO | null = await this.userRepository.getById(authorId)
     if (!author) throw new NotFoundException('Author')
 
+    if (userId === authorId) { return await this.repository.getByUserId(authorId) }
     const isFollowing: boolean = await this.followRepository.isFollowing(userId, author.id)
 
     if (author.publicPosts || isFollowing) { return await this.repository.getByUserId(authorId) }
