@@ -17,17 +17,12 @@ export class CommentRepositoryImpl implements CommentRepository {
   }
 
   async getCommentsByUserId (userId: string): Promise<CommentDto[]> {
-    const posts = await this.db.post.findMany({
+    const comments = await this.db.post.findMany({
       where: {
         authorId: userId,
-        postType: PostType.POST
-      },
-      include: {
-        comments: true
+        postType: PostType.COMMENT
       }
     })
-
-    const comments = posts.flatMap((post) => post.comments)
 
     return comments.map((comment) => new CommentDto(comment.id, comment.authorId, comment.content))
   }
