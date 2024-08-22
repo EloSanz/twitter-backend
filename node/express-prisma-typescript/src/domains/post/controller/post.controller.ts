@@ -121,26 +121,30 @@
  */
 /**
  * @swagger
- * /api/post/recommended:
+ * /api/post:
  *   get:
- *     tags: [Posts]
- *     summary: Get recommended posts
+ *     tags:
+ *       - Posts
+ *     summary: Get the latest posts
  *     parameters:
  *       - in: query
  *         name: limit
+ *         description: The maximum number of posts to return
  *         schema:
  *           type: integer
  *           example: 10
  *       - in: query
  *         name: before
+ *         description: Cursor for fetching posts before a specific post ID
  *         schema:
  *           type: string
- *           example: ""
+ *           example: "previous_post_id"
  *       - in: query
  *         name: after
+ *         description: Cursor for fetching posts after a specific post ID
  *         schema:
  *           type: string
- *           example: ""
+ *           example: "next_post_id"
  *     responses:
  *       200:
  *         description: A list of posts
@@ -151,30 +155,48 @@
  *               items:
  *                 $ref: '#/components/schemas/ExtendedPostDTO'
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - User authentication required
  */
+
 /**
  * @swagger
- * /api/post/{postId}:
+ * /api/post/recommended:
  *   get:
- *     tags: [Posts]
- *     summary: Get a post by its ID
+ *     tags:
+ *       - Posts
+ *     summary: Get recommended posts
  *     parameters:
- *       - in: path
- *         name: postId
- *         required: true
+ *       - in: query
+ *         name: limit
+ *         description: The maximum number of recommended posts to return
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *       - in: query
+ *         name: before
+ *         description: Cursor for fetching recommended posts before a specific post ID
  *         schema:
  *           type: string
+ *           example: "previous_post_id"
+ *       - in: query
+ *         name: after
+ *         description: Cursor for fetching recommended posts after a specific post ID
+ *         schema:
+ *           type: string
+ *           example: "next_post_id"
  *     responses:
  *       200:
- *         description: A post object
+ *         description: A list of recommended posts
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ExtendedPostDTO'
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ExtendedPostDTO'
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - User authentication required
  */
+
 /**
  * @swagger
  * /api/post/by_user/{userId}:
