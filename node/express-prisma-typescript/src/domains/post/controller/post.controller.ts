@@ -121,11 +121,11 @@
  */
 /**
  * @swagger
- * /api/post:
+ * /api/post/{postId}:
  *   get:
  *     tags:
  *       - Posts
- *     summary: Get the latest posts
+ *     summary: Get posts by post ID
  *     parameters:
  *       - in: query
  *         name: limit
@@ -138,13 +138,11 @@
  *         description: Cursor for fetching posts before a specific post ID
  *         schema:
  *           type: string
- *           example: "previous_post_id"
  *       - in: query
  *         name: after
  *         description: Cursor for fetching posts after a specific post ID
  *         schema:
  *           type: string
- *           example: "next_post_id"
  *     responses:
  *       200:
  *         description: A list of posts
