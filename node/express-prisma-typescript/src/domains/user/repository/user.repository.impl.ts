@@ -88,8 +88,13 @@ export class UserRepositoryImpl implements UserRepository {
 
   async getUserFollowing (userId: string): Promise<string[]> {
     const followRecords = await this.db.follow.findMany({
-      where: { followerId: userId },
-      select: { followedId: true }
+      where: {
+        followerId: userId,
+        followed: {
+          deletedAt: null
+        }
+      },
+      include: { followed: true }
     })
     return followRecords.map(record => record.followedId)
   }
@@ -141,7 +146,7 @@ export class UserRepositoryImpl implements UserRepository {
           { email },
           { username }
         ],
-        deletedAt: null // register is not verifying if user is deleted
+        deletedAt: null
       }
     })
     return user ? new ExtendedUserDTO(user) : null
