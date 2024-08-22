@@ -121,7 +121,7 @@
  */
 /**
  * @swagger
- * /api/post/by_user/{postId}:
+ * /api/post/{postId}:
  *   get:
  *     tags: [Posts]
  *     summary: Get posts by postID
