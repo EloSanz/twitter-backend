@@ -116,6 +116,42 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/ExtendedPostDTO'
+ *       401:
+ *         description: Unauthorized
+ */
+/**
+ * @swagger
+ * /api/post/recommended:
+ *   get:
+ *     tags: [Posts]
+ *     summary: Get recommended posts
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *           example: ""
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *           example: ""
+ *     responses:
+ *       200:
+ *         description: A list of posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ExtendedPostDTO'
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
@@ -136,6 +172,8 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ExtendedPostDTO'
+ *       401:
+ *         description: Unauthorized
  */
 /**
  * @swagger
