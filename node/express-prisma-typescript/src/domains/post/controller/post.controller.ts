@@ -121,31 +121,32 @@
  */
 /**
  * @swagger
- * /api/post/{postId}:
+ * /api/post/by_user/{postId}:
  *   get:
- *     tags:
- *       - Posts
- *     summary: Get posts by post ID
+ *     tags: [Posts]
+ *     summary: Get posts by postID
  *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
  *       - in: query
  *         name: limit
- *         description: The maximum number of posts to return
  *         schema:
  *           type: integer
  *           example: 10
  *       - in: query
  *         name: before
- *         description: Cursor for fetching posts before a specific post ID
  *         schema:
  *           type: string
  *       - in: query
  *         name: after
- *         description: Cursor for fetching posts after a specific post ID
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: A list of posts
+ *         description: A list of posts by postID
  *         content:
  *           application/json:
  *             schema:
@@ -153,9 +154,8 @@
  *               items:
  *                 $ref: '#/components/schemas/ExtendedPostDTO'
  *       401:
- *         description: Unauthorized - User authentication required
+ *         description: Unauthorized
  */
-
 /**
  * @swagger
  * /api/post/recommended:
