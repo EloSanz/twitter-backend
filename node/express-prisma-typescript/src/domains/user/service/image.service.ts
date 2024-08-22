@@ -15,7 +15,7 @@ export class ImageService {
     this.repository = repository
   }
 
-  async uploadImageWithUrlAndKey (userId: string, key: string, uploadUrl: string, buffer: Buffer, originalName: string, mimeType: string): Promise<string> {
+  async uploadImageWithUrlAndKey (userId: string, key: string, uploadUrl: string, buffer: Buffer, mimeType: string): Promise<string> {
     try {
       const response = await fetch(uploadUrl, {
         method: 'PUT',

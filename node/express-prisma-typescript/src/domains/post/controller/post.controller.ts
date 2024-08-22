@@ -240,7 +240,14 @@ postRouter.get('/', async (req: Request, res: Response) => {
 
   return res.status(HttpStatus.OK).json(posts)
 })
+postRouter.get('/recommended', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  const { limit, before, after } = req.query as Record<string, string>
 
+  const posts = await service.getRecommendedPaginated(userId, { limit: Number(limit), before, after })
+
+  return res.status(HttpStatus.OK).json(posts)
+})
 postRouter.get('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
@@ -271,7 +278,7 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
 
-  await service.deletePost(userId, postId)
+  await service.delete(userId, postId)
 
   return res.status(HttpStatus.OK).send(`Deleted post ${postId}`)
 })

@@ -30,12 +30,8 @@ export class PostRepositoryImpl implements PostRepository {
       skip: options.after ?? options.before ? 1 : undefined,
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
       orderBy: [
-        {
-          createdAt: 'desc'
-        },
-        {
-          id: 'asc'
-        }
+        { createdAt: 'desc' },
+        { id: 'asc' }
       ]
     })
 
@@ -61,18 +57,68 @@ export class PostRepositoryImpl implements PostRepository {
     return extendedPosts
   }
 
-  async getAuthor (authorId: string): Promise<UserDTO> {
+  async getRecommendedPaginated (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+    const posts = await this.db.post.findMany({
+      where: {
+        postType: PostType.POST
+      },
+      cursor: options.after ? { id: options.after } : (options.before) ? { id: options.before } : undefined,
+      skip: options.after ?? options.before ? 1 : undefined,
+      take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
+      orderBy: [
+        { createdAt: 'desc' },
+        { id: 'asc' }
+      ]
+    })
+
+    const extendedPosts = await Promise.all(posts.map(async post => {
+      const author = await this.getAuthor(post.authorId)
+
+      const isFollowing = await this.isFollowing(userId, post.authorId)
+      if (!author.publicPosts && !isFollowing) { return null }
+
+      const qtyComments = await this.getCommentCount(post.id)
+      const qtyLikes = await this.getReactionCount(post.id, ReactionType.LIKE)
+      const qtyRetweets = await this.getReactionCount(post.id, ReactionType.RETWEET)
+
+      return new ExtendedPostDTO({
+        id: post.id,
+        authorId: post.authorId,
+        content: post.content,
+        images: post.images,
+        createdAt: post.createdAt,
+        author,
+        qtyComments,
+        qtyLikes,
+        qtyRetweets
+      })
+    }))
+
+    return extendedPosts.filter(post => post !== null)
+  }
+
+  private async isFollowing (followerId: string, followedId: string): Promise<boolean> {
+    const existingFollower = await this.db.follow.findFirst({
+      where: {
+        followerId,
+        followedId
+      }
+    })
+    return !!existingFollower
+  }
+
+  private async getAuthor (authorId: string): Promise<UserDTO> {
     const user = await this.db.user.findUnique({ where: { id: authorId } })
     if (!user) throw new Error('User not found')
     return new UserDTO(user)
   }
 
-  async getCommentCount (postId: string): Promise<number> {
+  private async getCommentCount (postId: string): Promise<number> {
     const count = await this.db.post.count({ where: { parentId: postId } })
     return count
   }
 
-  async getReactionCount (postId: string, reactionType: ReactionType): Promise<number> {
+  private async getReactionCount (postId: string, reactionType: ReactionType): Promise<number> {
     const count = await this.db.reaction.count({
       where: {
         postId,

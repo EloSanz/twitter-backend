@@ -67,9 +67,9 @@ export class UserServiceImpl implements UserService {
     return await this.imageService.generateDownloadUrl(key)
   }
 
-  async updateUserProfilePicture (userId: string, key: string, uploadUrl: string, buffer: Buffer, originalName: string, mimeType: string): Promise<string> {
+  async updateUserProfilePicture (userId: string, key: string, uploadUrl: string, buffer: Buffer, mimeType: string): Promise<string> {
     const user: boolean = await this.repository.existById(userId)
     if (!user) throw new NotFoundException('user')
-    return await this.imageService.uploadImageWithUrlAndKey(userId, key, uploadUrl, buffer, originalName, mimeType)
+    return await this.imageService.uploadImageWithUrlAndKey(userId, key, uploadUrl, buffer, mimeType)
   }
 }

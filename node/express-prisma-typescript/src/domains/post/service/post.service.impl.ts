@@ -16,7 +16,7 @@ export class PostServiceImpl implements PostService {
     return await this.repository.create(userId, data)
   }
 
-  async deletePost (userId: string, postId: string): Promise<void> {
+  async delete (userId: string, postId: string): Promise<void> {
     const post = await this.repository.getById(postId)
     if (!post) throw new NotFoundException('post')
     if (post.authorId !== userId) throw new ForbiddenException()
@@ -39,6 +39,10 @@ export class PostServiceImpl implements PostService {
 
   async getLatestPosts (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
     return await this.repository.getAllByDatePaginated(userId, options)
+  }
+
+  async getRecommendedPaginated (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+    return await this.repository.getRecommendedPaginated(userId, options)
   }
 
   async getPostsByUserId (userId: string, authorId: string): Promise<ExtendedPostDTO[]> {

@@ -195,18 +195,17 @@ describe('UserServiceImpl', () => {
       const key = 'some-key'
       const uploadUrl = 'http://example.com/upload'
       const buffer = Buffer.from('test')
-      const originalName = 'picture.jpg'
       const mimeType = 'image/jpeg'
       const updatedPictureUrl = 'http://example.com/pic.jpg'
 
       mockUserRepository.existById.mockResolvedValue(true)
       mockImageService.uploadImageWithUrlAndKey.mockResolvedValue(updatedPictureUrl)
 
-      const result = await userService.updateUserProfilePicture(userId, key, uploadUrl, buffer, originalName, mimeType)
+      const result = await userService.updateUserProfilePicture(userId, key, uploadUrl, buffer, mimeType)
 
       expect(result).toBe(updatedPictureUrl)
       expect(mockUserRepository.existById).toHaveBeenCalledWith(userId)
-      expect(mockImageService.uploadImageWithUrlAndKey).toHaveBeenCalledWith(userId, key, uploadUrl, buffer, originalName, mimeType)
+      expect(mockImageService.uploadImageWithUrlAndKey).toHaveBeenCalledWith(userId, key, uploadUrl, buffer, mimeType)
     })
 
     it('should throw NotFoundException if user does not exist', async () => {
@@ -214,12 +213,11 @@ describe('UserServiceImpl', () => {
       const key = 'some-key'
       const uploadUrl = 'http://example.com/upload'
       const buffer = Buffer.from('test')
-      const originalName = 'picture.jpg'
       const mimeType = 'image/jpeg'
 
       mockUserRepository.existById.mockResolvedValue(false)
 
-      await expect(userService.updateUserProfilePicture(userId, key, uploadUrl, buffer, originalName, mimeType)).rejects.toThrow(NotFoundException)
+      await expect(userService.updateUserProfilePicture(userId, key, uploadUrl, buffer, mimeType)).rejects.toThrow(NotFoundException)
       expect(mockUserRepository.existById).toHaveBeenCalledWith(userId)
     })
   })
