@@ -156,44 +156,44 @@
  *       401:
  *         description: Unauthorized
  */
-/**
- * @swagger
- * /api/post/recommended:
- *   get:
- *     tags:
- *       - Posts
- *     summary: Get recommended posts
- *     parameters:
- *       - in: query
- *         name: limit
- *         description: The maximum number of recommended posts to return
- *         schema:
- *           type: integer
- *           example: 10
- *       - in: query
- *         name: before
- *         description: Cursor for fetching recommended posts before a specific post ID
- *         schema:
- *           type: string
- *           example: "previous_post_id"
- *       - in: query
- *         name: after
- *         description: Cursor for fetching recommended posts after a specific post ID
- *         schema:
- *           type: string
- *           example: "next_post_id"
- *     responses:
- *       200:
- *         description: A list of recommended posts
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ExtendedPostDTO'
- *       401:
- *         description: Unauthorized - User authentication required
- */
+// /**
+//  * @swagger
+//  * /api/post/all:
+//  *   get:
+//  *     tags:
+//  *       - Posts
+//  *     summary: Get all posts
+//  *     parameters:
+//  *       - in: query
+//  *         name: limit
+//  *         description: The maximum number of posts to return
+//  *         schema:
+//  *           type: integer
+//  *           example: 10
+//  *       - in: query
+//  *         name: before
+//  *         description: Cursor for fetching posts before a specific post ID
+//  *         schema:
+//  *           type: string
+//  *           example: "previous_post_id"
+//  *       - in: query
+//  *         name: after
+//  *         description: Cursor for fetching posts after a specific post ID
+//  *         schema:
+//  *           type: string
+//  *           example: "next_post_id"
+//  *     responses:
+//  *       200:
+//  *         description: A list of posts
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               type: array
+//  *               items:
+//  *                 $ref: '#/components/schemas/ExtendedPostDTO'
+//  *       401:
+//  *         description: Unauthorized - User authentication required
+//  */
 
 /**
  * @swagger
@@ -294,15 +294,15 @@ postRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { limit, before, after } = req.query as Record<string, string>
 
-  const posts = await service.getLatestPosts(userId, { limit: Number(limit), before, after })
+  const posts = await service.getRecommendedPaginated(userId, { limit: Number(limit), before, after })
 
   return res.status(HttpStatus.OK).json(posts)
 })
-postRouter.get('/recommended', async (req: Request, res: Response) => {
+postRouter.get('/all', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { limit, before, after } = req.query as Record<string, string>
 
-  const posts = await service.getRecommendedPaginated(userId, { limit: Number(limit), before, after })
+  const posts = await service.getLatestPosts(userId, { limit: Number(limit), before, after })
 
   return res.status(HttpStatus.OK).json(posts)
 })
