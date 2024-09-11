@@ -1,5 +1,6 @@
 import { ArrayMaxSize, ArrayNotEmpty, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
-import { UserDTO } from '@domains/user/dto'
+import { Author, UserDTO } from '@domains/user/dto'
+import { Reaction } from '@domains/reaction/dto/reactionDto'
 
 export class CreatePostInputDTO {
   @IsString()
@@ -43,4 +44,17 @@ export class ExtendedPostDTO extends PostDTO {
   qtyComments!: number
   qtyLikes!: number
   qtyRetweets!: number
+}
+
+/// /////////////////////////////////////////////
+export interface Post {
+  id: string
+  content: string
+  parentId?: string
+  images?: string[]
+  createdAt: Date
+  authorId: string
+  author: Author
+  reactions: Reaction[]
+  comments: Post[]
 }

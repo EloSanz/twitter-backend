@@ -1,5 +1,5 @@
 import { OffsetPagination } from '@types'
-import { UserViewDTO } from '../dto'
+import { UserProfile, UserViewDTO } from '../dto'
 
 export interface UserService {
   softDeleteUser: (userId: string) => Promise<void>
@@ -14,5 +14,6 @@ export interface UserService {
   updateUserProfilePicture: (userId: string, key: string, updateUrl: string, buffer: Buffer, originalname: string, mimetype: string) => Promise <string | null>
   isFollowing: (followedId: string, followerId: string) => Promise<boolean>
   deleteUser: (userId: string) => Promise<void>
-
+  /// ///////////////////////////////////////////
+  getUserProfile: (userId: string) => Promise<UserProfile>
 }

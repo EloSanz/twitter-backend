@@ -1,13 +1,14 @@
 import { ConflictException, NotFoundException } from '@utils/errors'
 import { OffsetPagination } from 'types'
-import { UserViewDTO } from '../dto'
+import { UserProfile, UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
 import { UserService } from './user.service'
 import { ImageService } from './image.service'
 import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.repository.impl'
 
 export class UserServiceImpl implements UserService {
-  constructor (private readonly repository: UserRepository,
+  constructor (
+    private readonly repository: UserRepository,
     private readonly imageService: ImageService,
     private readonly followerRepository: FollowerRepositoryImpl
   ) {}
@@ -49,11 +50,13 @@ export class UserServiceImpl implements UserService {
   }
 
   async isFollowing (followedId: string, followerId: string): Promise<boolean> {
-    if (followedId === followerId) { throw new ConflictException('You can not follow yourself') }
+    if (followedId === followerId) {
+      throw new ConflictException('You can not follow yourself')
+    }
     return await this.followerRepository.isFollowing(followerId, followedId)
   }
 
-  async getUserProfilePictureUrl (userId: string): Promise <string | null> {
+  async getUserProfilePictureUrl (userId: string): Promise<string | null> {
     const user: boolean = await this.repository.existById(userId)
     if (!user) throw new NotFoundException('user')
     return await this.imageService.getUserProfilePictureUrl(userId)
@@ -67,9 +70,22 @@ export class UserServiceImpl implements UserService {
     return await this.imageService.generateDownloadUrl(key)
   }
 
-  async updateUserProfilePicture (userId: string, key: string, uploadUrl: string, buffer: Buffer, mimeType: string): Promise<string> {
+  async updateUserProfilePicture (
+    userId: string,
+    key: string,
+    uploadUrl: string,
+    buffer: Buffer,
+    mimeType: string
+  ): Promise<string> {
     const user: boolean = await this.repository.existById(userId)
     if (!user) throw new NotFoundException('user')
     return await this.imageService.uploadImageWithUrlAndKey(userId, key, uploadUrl, buffer, mimeType)
+  }
+
+  /// ///////////////////////////////////////////
+  async getUserProfile (userId: string): Promise<UserProfile> {
+    const user: boolean = await this.repository.existById(userId)
+    if (!user) throw new NotFoundException('user')
+    return await this.repository.getUserProfile(userId)
   }
 }

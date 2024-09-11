@@ -1,8 +1,10 @@
 import { SignupInputDTO } from '@domains/auth/dto'
 import { PrismaClient } from '@prisma/client'
 import { OffsetPagination } from '@types'
-import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
+import { Author, ExtendedUserDTO, UserDTO, UserProfile, UserViewDTO } from '../dto'
 import { UserRepository } from './user.repository'
+import { Post } from '@domains/post/dto'
+import { Reaction } from '@domains/reaction/dto/reactionDto'
 
 export class UserRepositoryImpl implements UserRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -16,11 +18,10 @@ export class UserRepositoryImpl implements UserRepository {
   }
 
   async update (userId: string, imageUrl: string): Promise<UserDTO> {
-    return await this.db.user
-      .update({
-        where: { id: userId },
-        data: { profilePicture: imageUrl }
-      })
+    return await this.db.user.update({
+      where: { id: userId },
+      data: { profilePicture: imageUrl }
+    })
   }
 
   async getById (userId: string): Promise<UserViewDTO | null> {
@@ -47,7 +48,10 @@ export class UserRepositoryImpl implements UserRepository {
       include: { sentMessages: true, receivedMessages: true }
     })
 
-    if (userWithMessages && (userWithMessages.sentMessages.length > 0 || userWithMessages.receivedMessages.length > 0)) {
+    if (
+      userWithMessages &&
+      (userWithMessages.sentMessages.length > 0 || userWithMessages.receivedMessages.length > 0)
+    ) {
       await this.db.message.updateMany({
         where: { senderId: userId },
         data: { deletedAt: new Date() }
@@ -66,7 +70,10 @@ export class UserRepositoryImpl implements UserRepository {
         include: { sentMessages: true, receivedMessages: true }
       })
 
-      if (userWithMessages && (userWithMessages.sentMessages.length > 0 || userWithMessages.receivedMessages.length > 0)) {
+      if (
+        userWithMessages &&
+        (userWithMessages.sentMessages.length > 0 || userWithMessages.receivedMessages.length > 0)
+      ) {
         await this.db.message.deleteMany({
           where: { senderId: userId }
         })
@@ -96,7 +103,7 @@ export class UserRepositoryImpl implements UserRepository {
       },
       include: { followed: true }
     })
-    return followRecords.map(record => record.followedId)
+    return followRecords.map((record) => record.followedId)
   }
 
   async getUsersFollowedByFollowingUsers (userIds: string[]): Promise<string[]> {
@@ -105,14 +112,14 @@ export class UserRepositoryImpl implements UserRepository {
       select: { followedId: true },
       distinct: ['followedId']
     })
-    return followedUsersRecords.map(record => record.followedId)
+    return followedUsersRecords.map((record) => record.followedId)
   }
 
   async getRecommendedUsersPaginated (userId: string, options: OffsetPagination): Promise<UserViewDTO[]> {
     const followingIds = await this.getUserFollowing(userId)
     const followedByFollowingUserIds = await this.getUsersFollowedByFollowingUsers(followingIds)
 
-    const recommendedUserIds = followedByFollowingUserIds.filter(id => id !== userId)
+    const recommendedUserIds = followedByFollowingUserIds.filter((id) => id !== userId)
 
     const users = await this.db.user.findMany({
       where: { id: { in: recommendedUserIds } },
@@ -121,7 +128,7 @@ export class UserRepositoryImpl implements UserRepository {
       orderBy: { id: 'asc' }
     })
 
-    return users.map(user => new UserViewDTO(user))
+    return users.map((user) => new UserViewDTO(user))
   }
 
   async getByUsername (username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
@@ -142,10 +149,7 @@ export class UserRepositoryImpl implements UserRepository {
   async getByEmailOrUsername (email?: string, username?: string): Promise<ExtendedUserDTO | null> {
     const user = await this.db.user.findFirst({
       where: {
-        OR: [
-          { email },
-          { username }
-        ],
+        OR: [{ email }, { username }],
         deletedAt: null
       }
     })
@@ -192,7 +196,7 @@ export class UserRepositoryImpl implements UserRepository {
         id: true
       }
     })
-    return users.map(user => user.id)
+    return users.map((user) => user.id)
   }
 
   async existById (userId: string): Promise<boolean> {
@@ -203,5 +207,57 @@ export class UserRepositoryImpl implements UserRepository {
       }
     })
     return count > 0
+  }
+
+  /// ///////////////////////////////////////////
+  async getUserProfile (userId: string): Promise<UserProfile> {
+    const user = await this.db.user.findUnique({
+      where: { id: userId },
+      include: {
+        posts: {
+          include: {
+            author: true,
+            reactions: true,
+            comments: { include: { author: true, reactions: true } }
+          }
+        },
+        followers: true,
+        follows: true
+      }
+    })
+
+    if (!user) throw new Error('User not found')
+
+    return this.transformUserProfile(user)
+  }
+
+  private transformPost (post: Post): Post {
+    return {
+      id: post.id,
+      content: post.content,
+      parentId: post.parentId ?? undefined,
+      images: post.images,
+      createdAt: post.createdAt,
+      authorId: post.authorId,
+      author: new Author(post.author),
+      reactions: post.reactions.map((reaction) => new Reaction(reaction)),
+      comments: post.comments.map(this.transformPost)
+    }
+  }
+
+  private transformUserProfile (user: any): UserProfile {
+    const transformedPosts = user.posts.map(this.transformPost)
+
+    return {
+      id: user.id,
+      username: user.username,
+      name: user.name ?? undefined,
+      profilePicture: user.profilePicture ?? undefined,
+      private: user.publicPosts,
+      createdAt: user.createdAt,
+      posts: transformedPosts,
+      followers: user.followers.map((follower: any) => new Author(follower.follower)),
+      following: user.follows.map((followed: any) => new Author(followed.followed))
+    }
   }
 }

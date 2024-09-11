@@ -338,10 +338,13 @@ userRouter.get('/:userId', async (req: Request, res: Response) => {
   const { userId: otherUserId } = req.params
   const { userId } = res.locals.context
 
-  const following: boolean = await service.isFollowing(otherUserId, userId)
+  if (userId !== otherUserId) {
+    const following: boolean = await service.isFollowing(otherUserId, userId)
+    const user = await service.getUser(otherUserId)
+    return res.status(HttpStatus.OK).json({ user, following })
+  }
   const user = await service.getUser(otherUserId)
-
-  return res.status(HttpStatus.OK).json({ user, following })
+  return res.status(HttpStatus.OK).json({ user })
 })
 
 userRouter.get('/by_username/:username', async (req: Request, res: Response) => {
@@ -351,6 +354,14 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
   const users: UserViewDTO[] = await service.getByUsername(username, { limit: Number(limit), skip: Number(skip) })
 
   return res.status(HttpStatus.OK).json(users)
+})
+
+userRouter.get('/profile/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params
+
+  const userProfile = await service.getUserProfile(userId)
+
+  return res.status(HttpStatus.OK).json(userProfile)
 })
 
 userRouter.delete('/', async (req: Request, res: Response) => {

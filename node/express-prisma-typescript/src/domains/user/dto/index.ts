@@ -1,3 +1,5 @@
+import { Post } from '@domains/post/dto'
+
 export class UserDTO {
   constructor (user: UserDTO) {
     this.id = user.id
@@ -40,4 +42,47 @@ export class UserViewDTO {
   username: string
   profilePicture: string | null
   publicPosts: boolean
+}
+
+/// ////////////////////////////////////////////
+export class Author {
+  id: string
+  name?: string
+  username: string
+  profilePicture?: string
+  private: boolean
+  createdAt: Date
+
+  constructor (author: Author) {
+    this.id = author.id
+    this.name = author.name
+    this.username = author.username
+    this.profilePicture = author.profilePicture
+    this.private = author.private
+    this.createdAt = author.createdAt
+  }
+}
+
+export class UserProfile {
+  constructor (user: UserProfile) {
+    this.id = user.id
+    this.name = user.name
+    this.username = user.username
+    this.profilePicture = user.profilePicture
+    this.private = user.private
+    this.createdAt = user.createdAt
+    this.followers = user.followers
+    this.following = user.following
+    this.posts = user.posts
+  }
+
+  id: string
+  name?: string
+  username: string
+  profilePicture?: string
+  private: boolean
+  createdAt: Date
+  followers: Author[]
+  following: Author[]
+  posts: Post[]
 }
