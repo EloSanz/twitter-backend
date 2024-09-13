@@ -94,7 +94,7 @@ export class PostRepositoryImpl implements PostRepository {
           not: userId
         },
         OR: [
-          { author: { publicPosts: true } },
+          { author: { private: false } },
           { author: { followers: { some: { followerId: userId } } } }
         ]
       },

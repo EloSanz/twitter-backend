@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { SignupInputDTO } from '@domains/auth/dto'
 import { PrismaClient } from '@prisma/client'
 import { OffsetPagination } from '@types'
@@ -162,7 +163,7 @@ export class UserRepositoryImpl implements UserRepository {
         id: userId
       },
       data: {
-        publicPosts: true
+        private: true
       }
     })
   }
@@ -173,7 +174,7 @@ export class UserRepositoryImpl implements UserRepository {
         id: userId
       },
       data: {
-        publicPosts: false
+        private: false
       }
     })
   }
@@ -181,16 +182,16 @@ export class UserRepositoryImpl implements UserRepository {
   async isPublicById (userId: string): Promise<boolean> {
     const user = await this.db.user.findUnique({
       where: { id: userId },
-      select: { publicPosts: true }
+      select: { private: true }
     })
-    return user?.publicPosts ?? false
+    return user?.private ?? false
   }
 
   // Task N° 2
   async getPublicPostAuthors (): Promise<string[]> {
     const users = await this.db.user.findMany({
       where: {
-        publicPosts: true
+        private: true
       },
       select: {
         id: true
@@ -221,12 +222,19 @@ export class UserRepositoryImpl implements UserRepository {
             comments: { include: { author: true, reactions: true } }
           }
         },
-        followers: true,
-        follows: true
+        followers: {
+          include:
+            {
+              follower: true
+            }
+        },
+        follows: {
+          include: {
+            followed: true
+          }
+        }
       }
     })
-
-    if (!user) throw new Error('User not found')
 
     return this.transformUserProfile(user)
   }
@@ -241,23 +249,27 @@ export class UserRepositoryImpl implements UserRepository {
       authorId: post.authorId,
       author: new Author(post.author),
       reactions: post.reactions.map((reaction) => new Reaction(reaction)),
-      comments: post.comments.map(this.transformPost)
+      comments: post.comments.map((comment) => this.transformPost(comment))
     }
   }
 
   private transformUserProfile (user: any): UserProfile {
-    const transformedPosts = user.posts.map(this.transformPost)
+    if (user === null) {
+      throw new Error('User not found')
+    }
+
+    const transformedPosts = user.posts ? user.posts.map(this.transformPost) : []
 
     return {
       id: user.id,
       username: user.username,
       name: user.name ?? undefined,
       profilePicture: user.profilePicture ?? undefined,
-      private: user.publicPosts,
+      private: user.private,
       createdAt: user.createdAt,
       posts: transformedPosts,
-      followers: user.followers.map((follower: any) => new Author(follower.follower)),
-      following: user.follows.map((followed: any) => new Author(followed.followed))
+      followers: user.followers?.map((follower: any) => new Author(follower.follower)) ?? [],
+      following: user.follows?.map((followed: any) => new Author(followed.followed)) ?? []
     }
   }
 }

@@ -84,8 +84,8 @@ export class UserServiceImpl implements UserService {
 
   /// ///////////////////////////////////////////
   async getUserProfile (userId: string): Promise<UserProfile> {
-    const user: boolean = await this.repository.existById(userId)
-    if (!user) throw new NotFoundException('user')
+    // const user: boolean = await this.repository.existById(userId)
+    // if (!user) throw new NotFoundException('user')
     return await this.repository.getUserProfile(userId)
   }
 }

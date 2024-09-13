@@ -294,7 +294,7 @@ import { UserService, UserServiceImpl } from '../service'
 import { ImageService } from '../service/image.service'
 import multer from 'multer'
 import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.repository.impl'
-import { UserViewDTO } from '../dto'
+import { UserProfile, UserViewDTO } from '../dto'
 
 export const userRouter = Router()
 const upload = multer({ storage: multer.memoryStorage() })
@@ -314,8 +314,7 @@ userRouter.get('/', async (req: Request, res: Response) => { // only retrieves r
 userRouter.get('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
-  const user = await service.getUser(userId)
-
+  const user: UserProfile = await service.getUserProfile(userId)
   return res.status(HttpStatus.OK).json(user)
 })
 
@@ -336,14 +335,7 @@ userRouter.get('/generate-upload-url', async (req: Request, res: Response) => {
 
 userRouter.get('/:userId', async (req: Request, res: Response) => {
   const { userId: otherUserId } = req.params
-  const { userId } = res.locals.context
-
-  if (userId !== otherUserId) {
-    const following: boolean = await service.isFollowing(otherUserId, userId)
-    const user = await service.getUser(otherUserId)
-    return res.status(HttpStatus.OK).json({ user, following })
-  }
-  const user = await service.getUser(otherUserId)
+  const user = await service.getUserProfile(otherUserId)
   return res.status(HttpStatus.OK).json({ user })
 })
 

@@ -5,14 +5,14 @@ export class UserDTO {
     this.id = user.id
     this.name = user.name
     this.createdAt = user.createdAt
-    this.publicPosts = user.publicPosts
+    this.private = user.private
     this.profileImage = user.profileImage
   }
 
   id: string
   name: string | null
   createdAt: Date
-  publicPosts: boolean
+  private: boolean
   profileImage?: string | null
 }
 
@@ -34,14 +34,14 @@ export class UserViewDTO {
     this.name = user.name
     this.username = user.username
     this.profilePicture = user.profilePicture
-    this.publicPosts = user.publicPosts
+    this.private = user.private
   }
 
   id: string
   name: string | null
   username: string
   profilePicture: string | null
-  publicPosts: boolean
+  private: boolean
 }
 
 /// ////////////////////////////////////////////

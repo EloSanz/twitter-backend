@@ -29,7 +29,7 @@ describe('UserServiceImpl', () => {
         name: 'John Doe',
         username: 'johndoe',
         profilePicture: 'url/to/profile/picture',
-        publicPosts: true
+        private: true
       }
       mockUserRepository.getById.mockResolvedValue(mockUser)
 
@@ -67,8 +67,8 @@ describe('UserServiceImpl', () => {
   describe('getByUsername', () => {
     it('should return users for a given username', async () => {
       const mockUsers: UserViewDTO[] = [
-        { id: '1', name: 'User One', username: 'userone', profilePicture: 'url1', publicPosts: true },
-        { id: '2', name: 'User Two', username: 'usertwo', profilePicture: 'url2', publicPosts: false }
+        { id: '1', name: 'User One', username: 'userone', profilePicture: 'url1', private: true },
+        { id: '2', name: 'User Two', username: 'usertwo', profilePicture: 'url2', private: false }
       ]
       const username = 'userone'
       const options: OffsetPagination = { skip: 0, limit: 10 }
@@ -101,7 +101,7 @@ describe('UserServiceImpl', () => {
         name: 'Test User',
         username: 'testuser',
         profilePicture: 'profileUrl',
-        publicPosts: true
+        private: true
       }
 
       mockUserRepository.getById.mockResolvedValue(mockUser)
@@ -111,7 +111,7 @@ describe('UserServiceImpl', () => {
       const user = await userService.getUser(userId)
 
       expect(mockUserRepository.setPublicPosts).toHaveBeenCalledWith(userId)
-      expect(user.publicPosts).toBe(true)
+      expect(user.private).toBe(true)
     })
 
     it('should set user posts to private and return user with publicPosts set to false', async () => {
@@ -120,7 +120,7 @@ describe('UserServiceImpl', () => {
         name: 'Test User',
         username: 'testuser',
         profilePicture: 'profileUrl',
-        publicPosts: false
+        private: false
       }
 
       // Mock repository methods
@@ -131,7 +131,7 @@ describe('UserServiceImpl', () => {
       const user = await userService.getUser(userId)
 
       expect(mockUserRepository.setPrivatePosts).toHaveBeenCalledWith(userId)
-      expect(user.publicPosts).toBe(false)
+      expect(user.private).toBe(false)
     })
   })
 

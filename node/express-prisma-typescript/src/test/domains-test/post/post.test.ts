@@ -39,14 +39,14 @@ describe('PostServiceImpl', () => {
         name: 'Author Name',
         username: 'username',
         profilePicture: 'profilePic.jpg',
-        publicPosts: true
+        private: true
       }
       const authorDTO: UserDTO = {
         id: authorId,
         name: 'Author Name',
         createdAt: new Date(),
         profileImage: 'profilePic.jpg',
-        publicPosts: true
+        private: true
       }
       const posts: ExtendedPostDTO[] = [{
         id: 'postId',
@@ -77,7 +77,7 @@ describe('PostServiceImpl', () => {
         id: authorId,
         name: 'Author Name',
         createdAt: new Date(),
-        publicPosts: true,
+        private: true,
         profileImage: 'profilePic.jpg'
       }
       const authorViewDTO: UserViewDTO = {
@@ -85,7 +85,7 @@ describe('PostServiceImpl', () => {
         name: 'Author Name',
         username: 'username',
         profilePicture: 'profilePic.jpg',
-        publicPosts: true
+        private: true
       }
       const posts: ExtendedPostDTO[] = [{
         id: 'postId',
@@ -124,7 +124,7 @@ describe('PostServiceImpl', () => {
     it('should throw NotFoundException when the author is private and the user is not following', async () => {
       const userId = 'userId'
       const authorId = 'authorId'
-      const authorViewDTO = { id: authorId, name: 'Author Name', username: 'username', profilePicture: 'profilePic.jpg', publicPosts: false } satisfies UserViewDTO
+      const authorViewDTO = { id: authorId, name: 'Author Name', username: 'username', profilePicture: 'profilePic.jpg', private: false } satisfies UserViewDTO
       mockUserRepository.getById.mockResolvedValue(authorViewDTO)
       mockFollowerRepository.isFollowing.mockResolvedValue(false)
 
@@ -138,7 +138,7 @@ describe('PostServiceImpl', () => {
       const userId = 'userId'
       const postId = 'postId'
       const post = { id: postId, authorId: 'authorId', content: 'content', images: [], createdAt: new Date() } satisfies PostDTO
-      const author: UserViewDTO = { id: 'authorId', name: 'Author Name', username: 'authorUsername', profilePicture: 'profilePic.jpg', publicPosts: true }
+      const author: UserViewDTO = { id: 'authorId', name: 'Author Name', username: 'authorUsername', profilePicture: 'profilePic.jpg', private: true }
 
       mockPostRepository.getById.mockResolvedValue(post)
       mockUserRepository.getById.mockResolvedValue(author)
@@ -155,7 +155,7 @@ describe('PostServiceImpl', () => {
       const userId = 'userId'
       const postId = 'postId'
       const post = { id: postId, authorId: 'authorId', content: 'content', images: [], createdAt: new Date() } satisfies PostDTO
-      const author: UserViewDTO = { id: 'authorId', name: 'Author Name', username: 'authorUsername', profilePicture: 'profilePic.jpg', publicPosts: false }
+      const author: UserViewDTO = { id: 'authorId', name: 'Author Name', username: 'authorUsername', profilePicture: 'profilePic.jpg', private: false }
 
       mockPostRepository.getById.mockResolvedValue(post)
       mockUserRepository.getById.mockResolvedValue(author)
@@ -196,7 +196,7 @@ describe('PostServiceImpl', () => {
       const userId = 'userId'
       const postId = 'postId'
       const post = { id: postId, authorId: 'authorId', content: 'content', images: [], createdAt: new Date() } satisfies PostDTO
-      const author: UserViewDTO = { id: 'authorId', name: 'Author Name', username: 'authorUsername', profilePicture: 'profilePic.jpg', publicPosts: false }
+      const author: UserViewDTO = { id: 'authorId', name: 'Author Name', username: 'authorUsername', profilePicture: 'profilePic.jpg', private: false }
 
       mockPostRepository.getById.mockResolvedValue(post)
       mockUserRepository.getById.mockResolvedValue(author)

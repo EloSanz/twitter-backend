@@ -33,7 +33,7 @@ export class PostServiceImpl implements PostService {
 
     const isFollowing = await this.followRepository.isFollowing(userId, author.id)
 
-    if (author.publicPosts || isFollowing) { return new PostDTO(post) }
+    if (author.private || isFollowing) { return new PostDTO(post) }
     throw new NotFoundException('Post')
   }
 
@@ -52,7 +52,7 @@ export class PostServiceImpl implements PostService {
     if (userId === authorId) { return await this.repository.getByUserId(authorId) }
     const isFollowing: boolean = await this.followRepository.isFollowing(userId, author.id)
 
-    if (author.publicPosts || isFollowing) { return await this.repository.getByUserId(authorId) }
+    if (author.private || isFollowing) { return await this.repository.getByUserId(authorId) }
 
     throw new NotFoundException('The profile is private')
   }

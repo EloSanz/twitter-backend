@@ -20,7 +20,7 @@ model User {
   profilePicture String?
 
   posts       Post[]  @relation("UserPosts")
-  publicPosts Boolean @default(true)
+  private Boolean @default(true)
 
   follows   Follow[] @relation(name: "follows")
   followers Follow[] @relation(name: "followers")
