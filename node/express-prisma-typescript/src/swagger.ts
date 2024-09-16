@@ -14,7 +14,8 @@ export function setupSwagger (app: Express): void {
       },
       servers: [
         {
-          url: 'https://twitter-backend.up.railway.app',
+          // url: 'https://twitter-backend.up.railway.app',
+          url: 'http://localhost:8081',
           description: 'Railway server'
         }
       ],

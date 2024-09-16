@@ -19,8 +19,8 @@ export class CommentServiceImpl implements CommentService {
     return await this.repository.getCommentsByUserId(userId)
   }
 
-  async addComment (postId: string, userId: string, content: string): Promise<CommentDto> {
-    return await this.repository.createComment(postId, userId, content)
+  async addComment (postId: string, userId: string, content: string, images: string[]): Promise<CommentDto> {
+    return await this.repository.createComment(postId, userId, content, images)
   }
 
   async getCommentsByPostId (postId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {

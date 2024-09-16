@@ -228,10 +228,10 @@ commentRouter.get('/by-userId/:userId', async (req: Request, res: Response) => {
 })
 
 commentRouter.post('/', async (req: Request, res: Response) => {
-  const { postId, content } = req.body
+  const { postId, content, images } = req.body
   const { userId } = res.locals.context
 
-  const comment: CommentDto = await service.addComment(postId, userId, content)
+  const comment: CommentDto = await service.addComment(postId, userId, content, images)
   return res.status(HttpStatus.CREATED).json({ message: 'Comment added successfully', comment })
 })
 

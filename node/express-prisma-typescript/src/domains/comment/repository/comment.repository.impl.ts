@@ -28,11 +28,12 @@ export class CommentRepositoryImpl implements CommentRepository {
     return comments.map((comment) => new CommentDto(comment.id, comment.authorId, comment.content))
   }
 
-  async createComment (postId: string, userId: string, content: string): Promise<CommentDto> {
+  async createComment (postId: string, userId: string, content: string, images: string[]): Promise<CommentDto> {
     const newPost: PostDTO = await this.db.post.create({
       data: {
         authorId: userId,
         content,
+        images,
         postType: PostType.COMMENT,
         parentId: postId
       }

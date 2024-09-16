@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /api/follower/follow/{user_id}:
+ * /api/follow/follow/{user_id}:
  *   post:
  *     summary: Follow a user
  *     tags: [Follower]
@@ -31,7 +31,7 @@
 
 /**
  * @swagger
- * /api/follower/unfollow/{user_id}:
+ * /api/follow/unfollow/{user_id}:
  *   post:
  *     summary: Unfollow a user
  *     tags: [Follower]
@@ -55,7 +55,7 @@
 
 /**
  * @swagger
- * /api/follower/followed:
+ * /api/follow/followed:
  *   get:
  *     summary: Get a list of users followed by the current user
  *     tags: [Follower]
@@ -78,7 +78,7 @@
 
 /**
  * @swagger
- * /api/follower/followers:
+ * /api/follow/followers:
  *   get:
  *     summary: Get a list of followers of the current user
  *     tags: [Follower]
