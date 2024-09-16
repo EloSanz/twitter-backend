@@ -25,7 +25,7 @@ export class CommentRepositoryImpl implements CommentRepository {
       include: { author: true }
     })
 
-    return comments.map((comment) => new CommentDto(comment.id, comment.authorId, comment.content))
+    return comments.map((comment) => new CommentDto(comment.id, comment.authorId, comment.content, comment.images))
   }
 
   async createComment (postId: string, userId: string, content: string, images: string[]): Promise<CommentDto> {
@@ -38,7 +38,7 @@ export class CommentRepositoryImpl implements CommentRepository {
         parentId: postId
       }
     })
-    const newComment = new CommentDto(newPost.id, userId, newPost.content)
+    const newComment = new CommentDto(newPost.id, userId, newPost.content, newPost.images)
 
     return newComment
   }
