@@ -220,7 +220,7 @@ import { UserRepositoryImpl } from '@domains/user/repository'
 const commentRouter = Router()
 const service = new CommentServiceImpl(new CommentRepositoryImpl(db), new UserRepositoryImpl(db))
 
-commentRouter.get('/by-userId/:userId', async (req: Request, res: Response) => {
+commentRouter.get('/by_userId/:userId', async (req: Request, res: Response) => {
   const { userId } = req.params
 
   const comments = await service.getCommentsByUser(userId)
@@ -236,7 +236,7 @@ commentRouter.post('/:postId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.CREATED).json({ message: 'Comment added successfully', comment })
 })
 
-commentRouter.get('/by-postId/:postId', async (req: Request, res: Response) => {
+commentRouter.get('/by_postId/:postId', async (req: Request, res: Response) => {
   const { postId } = req.params
   const { limit, before, after } = req.query as Record<string, string>
 

@@ -239,7 +239,7 @@ export class UserRepositoryImpl implements UserRepository {
     return this.transformUserProfile(user)
   }
 
-  private transformPost (post: Post): Post {
+  private readonly transformPost = (post: Post): Post => {
     return {
       id: post.id,
       content: post.content,
@@ -249,7 +249,8 @@ export class UserRepositoryImpl implements UserRepository {
       authorId: post.authorId,
       author: new Author(post.author),
       reactions: post.reactions.map((reaction) => new Reaction(reaction)),
-      comments: post.comments.map((comment) => this.transformPost(comment))
+
+      comments: post.parentId ? [] : post.comments.map((comment) => this.transformPost(comment))
     }
   }
 

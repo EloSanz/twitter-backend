@@ -339,8 +339,8 @@ userRouter.get('/:userId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json({ user })
 })
 
-userRouter.get('/by_username/:username', async (req: Request, res: Response) => {
-  const username: string = req.params.username
+userRouter.get('/search', async (req: Request, res: Response) => {
+  const username: string = req.query.username as string
   const { limit, skip } = req.query as Record<string, string>
 
   const users: UserViewDTO[] = await service.getByUsername(username, { limit: Number(limit), skip: Number(skip) })
