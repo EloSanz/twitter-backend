@@ -41,6 +41,10 @@ export class PostServiceImpl implements PostService {
     return await this.repository.getAllByDatePaginated(userId, options)
   }
 
+  async getFollowingPosts (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+    return await this.repository.getFollowingPosts(userId, options)
+  }
+
   async getRecommendedPaginated (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
     return await this.repository.getRecommendedPaginated(userId, options)
   }

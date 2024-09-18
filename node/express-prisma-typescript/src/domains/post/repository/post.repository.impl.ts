@@ -86,6 +86,50 @@ export class PostRepositoryImpl implements PostRepository {
     return extendedPosts
   }
 
+  async getFollowingPosts (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+    const posts = await this.db.post.findMany({
+      where: {
+        postType: PostType.POST,
+        deletedAt: null,
+        author: {
+          deletedAt: null,
+          followers: { some: { followerId: userId } }
+        }
+      },
+      include: {
+        author: true,
+        reactions: true
+      },
+      cursor: options.after ? { id: options.after } : options.before ? { id: options.before } : undefined,
+      skip: options.after ?? options.before ? 1 : undefined,
+      take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
+      orderBy: [
+        { createdAt: 'desc' },
+        { id: 'asc' }
+      ]
+    })
+
+    const extendedPosts = await Promise.all(posts.map(async post => {
+      const qtyComments = await this.getCommentCount(post.id)
+      const qtyLikes = post.reactions.filter(reaction => reaction.type === ReactionType.LIKE).length
+      const qtyRetweets = post.reactions.filter(reaction => reaction.type === ReactionType.RETWEET).length
+
+      return new ExtendedPostDTO({
+        id: post.id,
+        authorId: post.authorId,
+        content: post.content,
+        images: post.images,
+        createdAt: post.createdAt,
+        author: post.author,
+        qtyComments,
+        qtyLikes,
+        qtyRetweets
+      })
+    }))
+
+    return extendedPosts
+  }
+
   async getRecommendedPaginated (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
     const posts = await this.db.post.findMany({
       where: {
