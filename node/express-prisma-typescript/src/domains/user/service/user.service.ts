@@ -6,7 +6,9 @@ export interface UserService {
   getUserProfilePictureUrl: (userId: string) => Promise<string | null>
   getUser: (userId: string) => Promise<UserViewDTO>
   getUserRecommendations: (userId: string, options: OffsetPagination) => Promise<UserViewDTO[]>
-  getByUsername: (username: string, options: OffsetPagination) => Promise<UserViewDTO[]>
+
+  getByUsername: (userId: string, username: string, options: OffsetPagination) => Promise<UserViewDTO[]>
+
   setPublicPosts: (userId: string) => Promise<void>
   setPrivatePosts: (userId: string) => Promise<void>
   generateUploadUrl: (userId: string) => Promise<{ uploadUrl: string, key: string }>

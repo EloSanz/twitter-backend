@@ -132,18 +132,26 @@ export class UserRepositoryImpl implements UserRepository {
     return users.map((user) => new UserViewDTO(user))
   }
 
-  async getByUsername (username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
+  async getByUsername (userId: string, username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
+    console.log('called')
     const users = await this.db.user.findMany({
       take: options.limit ? options.limit : undefined,
       skip: options.skip ? options.skip : undefined,
       where: {
-        username: {
-          contains: username,
-          mode: 'insensitive'
-        },
-        deletedAt: null
+        OR: [
+          { followers: { some: { followerId: userId } } },
+          { private: false },
+          {
+            username: {
+              startsWith: username,
+              mode: 'insensitive'
+            },
+            deletedAt: null
+          }
+        ]
       }
     })
+
     return users.map((user) => new UserViewDTO(user))
   }
 

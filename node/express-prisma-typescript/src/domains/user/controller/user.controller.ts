@@ -333,17 +333,13 @@ userRouter.get('/generate-upload-url', async (req: Request, res: Response) => {
   res.status(HttpStatus.OK).json({ uploadUrl })
 })
 
-userRouter.get('/:userId', async (req: Request, res: Response) => {
-  const { userId: otherUserId } = req.params
-  const user = await service.getUserProfile(otherUserId)
-  return res.status(HttpStatus.OK).json({ user })
-})
-
 userRouter.get('/search', async (req: Request, res: Response) => {
   const username: string = req.query.username as string
+  const userId = res.locals.context.userId
+
   const { limit, skip } = req.query as Record<string, string>
 
-  const users: UserViewDTO[] = await service.getByUsername(username, { limit: Number(limit), skip: Number(skip) })
+  const users: UserViewDTO[] = await service.getByUsername(userId, username, { limit: Number(limit), skip: Number(skip) })
 
   return res.status(HttpStatus.OK).json(users)
 })
@@ -354,6 +350,12 @@ userRouter.get('/profile/:userId', async (req: Request, res: Response) => {
   const userProfile = await service.getUserProfile(userId)
 
   return res.status(HttpStatus.OK).json(userProfile)
+})
+
+userRouter.get('/:userId', async (req: Request, res: Response) => {
+  const { userId: otherUserId } = req.params
+  const user = await service.getUserProfile(otherUserId)
+  return res.status(HttpStatus.OK).json({ user })
 })
 
 userRouter.delete('/', async (req: Request, res: Response) => {

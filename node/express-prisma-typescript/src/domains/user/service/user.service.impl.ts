@@ -32,8 +32,8 @@ export class UserServiceImpl implements UserService {
     return await this.repository.getRecommendedUsersPaginated(userId, options)
   }
 
-  async getByUsername (username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
-    return await this.repository.getByUsername(username, options)
+  async getByUsername (userId: string, username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
+    return await this.repository.getByUsername(userId, username, options)
   }
 
   async deleteUser (userId: string): Promise<void> {

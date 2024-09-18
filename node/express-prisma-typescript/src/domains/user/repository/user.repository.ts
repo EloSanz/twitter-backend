@@ -11,7 +11,7 @@ export interface UserRepository {
   getById: (userId: string) => Promise<UserViewDTO | null>
   getByEmailOrUsername: (email?: string, username?: string) => Promise<ExtendedUserDTO | null>
   // getByEmailOrUsernameRegister: (email?: string, username?: string) => Promise<ExtendedUserDTO | null>
-  getByUsername: (username: string, options: OffsetPagination) => Promise<UserViewDTO[]>
+  getByUsername: (userId: string, username: string, options: OffsetPagination) => Promise<UserViewDTO[]>
   // Task N° 2
   getPublicPostAuthors: () => Promise<string[]>
   setPrivatePosts: (userId: string) => Promise<void>

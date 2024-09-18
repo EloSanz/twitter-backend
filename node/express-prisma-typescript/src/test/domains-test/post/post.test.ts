@@ -83,6 +83,7 @@ describe('PostServiceImpl', () => {
       const authorViewDTO: UserViewDTO = {
         id: authorId,
         name: 'Author Name',
+        createdAt: new Date(),
         username: 'username',
         profilePicture: 'profilePic.jpg',
         private: true
@@ -124,7 +125,7 @@ describe('PostServiceImpl', () => {
     it('should throw NotFoundException when the author is private and the user is not following', async () => {
       const userId = 'userId'
       const authorId = 'authorId'
-      const authorViewDTO = { id: authorId, name: 'Author Name', username: 'username', profilePicture: 'profilePic.jpg', private: false } satisfies UserViewDTO
+      const authorViewDTO = { id: authorId, name: 'Author Name', username: 'username', profilePicture: 'profilePic.jpg', private: false, createdAt: new Date() } satisfies UserViewDTO
       mockUserRepository.getById.mockResolvedValue(authorViewDTO)
       mockFollowerRepository.isFollowing.mockResolvedValue(false)
 
@@ -138,7 +139,7 @@ describe('PostServiceImpl', () => {
       const userId = 'userId'
       const postId = 'postId'
       const post = { id: postId, authorId: 'authorId', content: 'content', images: [], createdAt: new Date() } satisfies PostDTO
-      const author: UserViewDTO = { id: 'authorId', name: 'Author Name', username: 'authorUsername', profilePicture: 'profilePic.jpg', private: true }
+      const author: UserViewDTO = { id: 'authorId', name: 'Author Name', username: 'authorUsername', profilePicture: 'profilePic.jpg', private: true, createdAt: new Date() }
 
       mockPostRepository.getById.mockResolvedValue(post)
       mockUserRepository.getById.mockResolvedValue(author)

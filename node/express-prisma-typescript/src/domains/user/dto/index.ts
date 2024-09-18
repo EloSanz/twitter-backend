@@ -1,4 +1,5 @@
 import { Post } from '@domains/post/dto'
+import { User } from '@prisma/client'
 
 export class UserDTO {
   constructor (user: UserDTO) {
@@ -29,19 +30,21 @@ export class ExtendedUserDTO extends UserDTO {
   password!: string
 }
 export class UserViewDTO {
-  constructor (user: UserViewDTO) {
+  constructor (user: User) {
     this.id = user.id
-    this.name = user.name
+    this.name = user.name ?? undefined
     this.username = user.username
-    this.profilePicture = user.profilePicture
+    this.profilePicture = user.profilePicture ?? undefined
     this.private = user.private
+    this.createdAt = user.createdAt
   }
 
   id: string
-  name: string | null
+  name?: string
   username: string
-  profilePicture: string | null
+  profilePicture?: string
   private: boolean
+  createdAt?: Date
 }
 
 /// ////////////////////////////////////////////
