@@ -180,7 +180,9 @@ const service: ReactionService = new ReactionServiceImpl(new ReactionRepositoryI
 reactionRouter.post('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
-  const { type } = req.body
+  const type: string = req.body.type as string
+
+  console.log('reactionRouter.post ', type)
 
   const reaction: ReactionDto = await service.addReaction(userId, postId, type)
   return res.status(HttpStatus.CREATED).json({ message: 'Reaction added successfully', reaction })

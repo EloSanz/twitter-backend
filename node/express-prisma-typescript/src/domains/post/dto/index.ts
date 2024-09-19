@@ -47,7 +47,29 @@ export class ExtendedPostDTO extends PostDTO {
 }
 
 /// /////////////////////////////////////////////
-export interface Post {
+export class Post {
+  constructor (
+    id: string,
+    content: string,
+    createdAt: Date,
+    authorId: string,
+    author: Author,
+    reactions: Reaction[] = [],
+    comments: Post[] = [],
+    parentId?: string,
+    images?: string[]
+  ) {
+    this.id = id
+    this.content = content
+    this.createdAt = createdAt
+    this.authorId = authorId
+    this.author = author
+    this.reactions = reactions ?? []
+    this.comments = comments ?? []
+    this.parentId = parentId
+    this.images = images
+  }
+
   id: string
   content: string
   parentId?: string

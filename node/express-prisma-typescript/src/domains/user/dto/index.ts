@@ -56,13 +56,13 @@ export class Author {
   private: boolean
   createdAt: Date
 
-  constructor (author: Author) {
-    this.id = author.id
-    this.name = author.name
-    this.username = author.username
-    this.profilePicture = author.profilePicture
-    this.private = author.private
-    this.createdAt = author.createdAt
+  constructor (id: string, username_: string, private_: boolean, createdAt: Date, profilePicture?: string, name?: string) {
+    this.id = id
+    this.name = name
+    this.username = username_
+    this.profilePicture = profilePicture
+    this.private = private_
+    this.createdAt = createdAt
   }
 }
 

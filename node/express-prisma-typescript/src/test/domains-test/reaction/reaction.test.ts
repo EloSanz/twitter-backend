@@ -1,4 +1,4 @@
-import { ReactionDto } from '@domains/reaction/dto/reactionDto'
+import { ReactionDTO } from '@domains/reaction/dto/reactionDto'
 import { ReactionServiceImpl } from '@domains/reaction/service'
 import { ReactionType } from '@prisma/client'
 import { mockReactionRepository, mockPostRepository, mockUserRepository } from '@test/utils'
@@ -20,7 +20,7 @@ describe('ReactionServiceImpl', () => {
       const userId = 'userId'
       const postId = 'postId'
       const type: ReactionType = ReactionType.LIKE
-      const mockReactionDto: ReactionDto = { id: 'reactionId', postId, userId, type }
+      const mockReactionDto: ReactionDTO = { id: 'reactionId', postId, userId, type }
 
       mockPostRepository.existById.mockResolvedValue(true)
       mockReactionRepository.addReaction.mockResolvedValue(mockReactionDto)

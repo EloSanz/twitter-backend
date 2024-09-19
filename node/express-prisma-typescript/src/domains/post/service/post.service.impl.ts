@@ -1,4 +1,4 @@
-import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
+import { CreatePostInputDTO, ExtendedPostDTO, Post, PostDTO } from '../dto'
 import { PostRepository } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
@@ -23,17 +23,17 @@ export class PostServiceImpl implements PostService {
     await this.repository.delete(postId)
   }
 
-  async getPostByPostId (userId: string, postId: string): Promise<PostDTO> {
+  async getById (userId: string, postId: string): Promise<Post | null> {
     const post = await this.repository.getById(postId)
     if (!post) throw new NotFoundException('Post')
 
     const author: UserViewDTO | null = await this.userRepository.getById(post.authorId)
     if (!author) throw new NotFoundException('Author')
-    if (userId === post.authorId) { return new PostDTO(post) }
+    if (userId === post.authorId) { return post }
 
     const isFollowing = await this.followRepository.isFollowing(userId, author.id)
 
-    if (author.private || isFollowing) { return new PostDTO(post) }
+    if (!author.private || isFollowing) { return post }
     throw new NotFoundException('Post')
   }
 

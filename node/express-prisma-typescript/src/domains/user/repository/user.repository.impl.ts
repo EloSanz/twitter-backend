@@ -133,21 +133,19 @@ export class UserRepositoryImpl implements UserRepository {
   }
 
   async getByUsername (userId: string, username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
-    console.log('called')
+    if (username === '') return []
     const users = await this.db.user.findMany({
       take: options.limit ? options.limit : undefined,
       skip: options.skip ? options.skip : undefined,
       where: {
+        username: {
+          startsWith: username,
+          mode: 'insensitive'
+        },
+        deletedAt: null,
         OR: [
           { followers: { some: { followerId: userId } } },
-          { private: false },
-          {
-            username: {
-              startsWith: username,
-              mode: 'insensitive'
-            },
-            deletedAt: null
-          }
+          { private: false }
         ]
       }
     })
