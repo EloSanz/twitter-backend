@@ -1,7 +1,7 @@
 import { Message } from '@prisma/client'
 import { MessageRepositoryImpl } from '../repository/message.repository.impl'
 import { MessageService } from './message.service'
-import { CreateMessageDto, MessageStatus } from '../dto/messageDTO'
+import { ChatDTO, CreateMessageDto, MessageStatus } from '../dto/messageDTO'
 
 export class MessageServiceImpl implements MessageService {
   constructor (private readonly messageRepo: MessageRepositoryImpl) {}
@@ -36,5 +36,13 @@ export class MessageServiceImpl implements MessageService {
 
   async checkFollowStatus (senderId: string, receiverId: string): Promise<boolean> {
     return await this.messageRepo.checkFollowStatus(senderId, receiverId)
+  }
+
+  async createRoom (roomId: string, senderId: string, receiverId: string): Promise<string> {
+    return await this.messageRepo.createRoom(roomId, senderId, receiverId)
+  }
+
+  async getChats (userId: string): Promise<ChatDTO[]> {
+    return await this.messageRepo.getChats(userId)
   }
 }

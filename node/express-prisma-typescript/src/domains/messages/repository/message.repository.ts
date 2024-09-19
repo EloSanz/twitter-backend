@@ -1,5 +1,5 @@
 import { Message } from '@prisma/client'
-import { CreateMessageDto, MessageStatus } from '../dto/messageDTO'
+import { ChatDTO, CreateMessageDto, MessageStatus } from '../dto/messageDTO'
 
 export interface MessageRepository {
   createMessage: (newMessage: CreateMessageDto) => Promise<Message>
@@ -10,4 +10,7 @@ export interface MessageRepository {
   updateMessageStatus: (id: number, status: MessageStatus) => Promise<Message>
   getMessagesBetweenUsers: (senderId: string, receiverId: string) => Promise<Message[]>
   checkFollowStatus: (senderId: string, receiverId: string) => Promise <boolean>
+
+  getChats: (userId: string) => Promise<ChatDTO[]>
+  createRoom: (roomId: string, senderId: any, receiverId: string) => Promise<string>
 }

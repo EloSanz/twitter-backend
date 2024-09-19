@@ -53,16 +53,17 @@ export const setupSocketIO = (server: http.Server): Server => {
 
       try {
         const followStatus: boolean = await messageService.checkFollowStatus(senderId, receiverId)
-        if (!followStatus) {
+        if (followStatus) {
           socket.emit('error', 'You can only chat if you follow each other.')
           return
         }
 
         const roomId = getRoomId(senderId, receiverId)
+        const chatId: string = await messageService.createRoom(roomId, senderId, receiverId)
         await socket.join(roomId)
 
-        const messages: Message[] = await messageService.getMessagesBetweenUsers(senderId, receiverId)
-        socket.emit('previousMessages', messages)
+        // const messages: Message[] = await messageService.getMessagesBetweenUsers(senderId, receiverId)
+        // socket.emit('previousMessages', messages)
 
         console.log(`User ${senderId} joined chat with ${receiverId}`)
       } catch (error) {
@@ -72,7 +73,9 @@ export const setupSocketIO = (server: http.Server): Server => {
 
     socket.on('sendMessage', async ({ receiverId, content }: SendMessagePayload) => {
       const senderId = socket.data.userId
-      const messageData: CreateMessageDto = new CreateMessageDto(senderId, receiverId, content)
+      const chatId = getRoomId(senderId, receiverId)
+
+      const messageData: CreateMessageDto = new CreateMessageDto(senderId, receiverId, content, chatId)
 
       try {
         const message = await messageService.createMessage(messageData)

@@ -5,13 +5,13 @@ export interface RemoveReactionDto {
   type: ReactionType
 }
 
-export class ReactionDTO {
+export class ReactionDto {
   id: string
   userId: string
   postId: string
   type: ReactionType
 
-  constructor (reaction: ReactionDTO) {
+  constructor (reaction: ReactionDto) {
     this.id = reaction.id
     this.userId = reaction.userId
     this.postId = reaction.postId

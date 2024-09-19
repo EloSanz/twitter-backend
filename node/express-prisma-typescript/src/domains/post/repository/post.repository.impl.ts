@@ -3,8 +3,7 @@ import { PostType, PrismaClient, ReactionType } from '@prisma/client'
 import { CursorPagination } from '@types'
 
 import { PostRepository } from '.'
-import { CreatePostInputDTO, ExtendedPostDTO, PostDTO, Post } from '../dto'
-import { Author } from '@domains/user/dto'
+import { CreatePostInputDTO, ExtendedPostDTO, Post, PostDTO } from '../dto'
 
 export class PostRepositoryImpl implements PostRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -35,67 +34,7 @@ export class PostRepositoryImpl implements PostRepository {
   }
 
   async getById (postId: string): Promise<Post | null> {
-    const post = await this.db.post.findUnique({
-      where: {
-        id: postId,
-        deletedAt: null
-      },
-      include: {
-        author: true,
-        reactions: true,
-        comments: {
-          include: {
-            author: true,
-            reactions: true
-          }
-        }
-      }
-    })
-
-    if (!post) return null
-
-    const author = new Author(
-      post.author.id,
-      post.author.username,
-      post.author.private,
-      post.author.createdAt,
-      post.author.name ?? undefined,
-      post.author.profilePicture ?? undefined
-    )
-
-    const postFront = new Post(
-      post.id,
-      post.content,
-      post.createdAt,
-      post.authorId,
-      author,
-      post.reactions ?? [],
-      post.comments?.map(
-        (comment) =>
-          new Post(
-            comment.id,
-            comment.content,
-            comment.createdAt,
-            comment.authorId,
-            new Author(
-              comment.author.id,
-              comment.author.username,
-              comment.author.private,
-              comment.author.createdAt,
-              comment.author.name ?? undefined,
-              comment.author.profilePicture ?? undefined
-            ),
-            comment.reactions ?? [],
-            [],
-            comment.parentId ?? undefined,
-            comment.images ?? undefined
-          )
-      ) ?? [],
-      post.parentId ?? undefined,
-      post.images ?? undefined
-    )
-
-    return postFront
+    return null
   }
 
   async getAllByDatePaginated (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
@@ -114,28 +53,29 @@ export class PostRepositoryImpl implements PostRepository {
       cursor: options.after ? { id: options.after } : options.before ? { id: options.before } : undefined,
       skip: options.after ?? options.before ? 1 : undefined,
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
-      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }]
+      orderBy: [
+        { createdAt: 'desc' },
+        { id: 'asc' }
+      ]
     })
 
-    const extendedPosts = await Promise.all(
-      posts.map(async (post) => {
-        const qtyComments = await this.getCommentCount(post.id)
-        const qtyLikes = post.reactions.filter((reaction) => reaction.type === ReactionType.LIKE).length
-        const qtyRetweets = post.reactions.filter((reaction) => reaction.type === ReactionType.RETWEET).length
+    const extendedPosts = await Promise.all(posts.map(async post => {
+      const qtyComments = await this.getCommentCount(post.id)
+      const qtyLikes = post.reactions.filter(reaction => reaction.type === ReactionType.LIKE).length
+      const qtyRetweets = post.reactions.filter(reaction => reaction.type === ReactionType.RETWEET).length
 
-        return new ExtendedPostDTO({
-          id: post.id,
-          authorId: post.authorId,
-          content: post.content,
-          images: post.images,
-          createdAt: post.createdAt,
-          author: post.author,
-          qtyComments,
-          qtyLikes,
-          qtyRetweets
-        })
+      return new ExtendedPostDTO({
+        id: post.id,
+        authorId: post.authorId,
+        content: post.content,
+        images: post.images,
+        createdAt: post.createdAt,
+        author: post.author,
+        qtyComments,
+        qtyLikes,
+        qtyRetweets
       })
-    )
+    }))
 
     return extendedPosts
   }
@@ -157,28 +97,29 @@ export class PostRepositoryImpl implements PostRepository {
       cursor: options.after ? { id: options.after } : options.before ? { id: options.before } : undefined,
       skip: options.after ?? options.before ? 1 : undefined,
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
-      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }]
+      orderBy: [
+        { createdAt: 'desc' },
+        { id: 'asc' }
+      ]
     })
 
-    const extendedPosts = await Promise.all(
-      posts.map(async (post) => {
-        const qtyComments = await this.getCommentCount(post.id)
-        const qtyLikes = post.reactions.filter((reaction) => reaction.type === ReactionType.LIKE).length
-        const qtyRetweets = post.reactions.filter((reaction) => reaction.type === ReactionType.RETWEET).length
+    const extendedPosts = await Promise.all(posts.map(async post => {
+      const qtyComments = await this.getCommentCount(post.id)
+      const qtyLikes = post.reactions.filter(reaction => reaction.type === ReactionType.LIKE).length
+      const qtyRetweets = post.reactions.filter(reaction => reaction.type === ReactionType.RETWEET).length
 
-        return new ExtendedPostDTO({
-          id: post.id,
-          authorId: post.authorId,
-          content: post.content,
-          images: post.images,
-          createdAt: post.createdAt,
-          author: post.author,
-          qtyComments,
-          qtyLikes,
-          qtyRetweets
-        })
+      return new ExtendedPostDTO({
+        id: post.id,
+        authorId: post.authorId,
+        content: post.content,
+        images: post.images,
+        createdAt: post.createdAt,
+        author: post.author,
+        qtyComments,
+        qtyLikes,
+        qtyRetweets
       })
-    )
+    }))
 
     return extendedPosts
   }
@@ -190,7 +131,10 @@ export class PostRepositoryImpl implements PostRepository {
         authorId: {
           not: userId
         },
-        OR: [{ author: { private: false } }, { author: { followers: { some: { followerId: userId } } } }]
+        OR: [
+          { author: { private: false } },
+          { author: { followers: { some: { followerId: userId } } } }
+        ]
       },
       include: {
         author: true,
@@ -199,28 +143,29 @@ export class PostRepositoryImpl implements PostRepository {
       cursor: options.after ? { id: options.after } : options.before ? { id: options.before } : undefined,
       skip: options.after ?? options.before ? 1 : undefined,
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
-      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }]
+      orderBy: [
+        { createdAt: 'desc' },
+        { id: 'asc' }
+      ]
     })
 
-    const extendedPosts = await Promise.all(
-      posts.map(async (post) => {
-        const qtyComments = await this.getCommentCount(post.id)
-        const qtyLikes = post.reactions.filter((reaction) => reaction.type === ReactionType.LIKE).length
-        const qtyRetweets = post.reactions.filter((reaction) => reaction.type === ReactionType.RETWEET).length
+    const extendedPosts = await Promise.all(posts.map(async post => {
+      const qtyComments = await this.getCommentCount(post.id)
+      const qtyLikes = post.reactions.filter(reaction => reaction.type === ReactionType.LIKE).length
+      const qtyRetweets = post.reactions.filter(reaction => reaction.type === ReactionType.RETWEET).length
 
-        return new ExtendedPostDTO({
-          id: post.id,
-          authorId: post.authorId,
-          content: post.content,
-          images: post.images,
-          createdAt: post.createdAt,
-          author: post.author,
-          qtyComments,
-          qtyLikes,
-          qtyRetweets
-        })
+      return new ExtendedPostDTO({
+        id: post.id,
+        authorId: post.authorId,
+        content: post.content,
+        images: post.images,
+        createdAt: post.createdAt,
+        author: post.author,
+        qtyComments,
+        qtyLikes,
+        qtyRetweets
       })
-    )
+    }))
 
     return extendedPosts
   }
@@ -241,25 +186,23 @@ export class PostRepositoryImpl implements PostRepository {
       }
     })
 
-    const extendedPosts = await Promise.all(
-      posts.map(async (post) => {
-        const qtyComments = await this.getCommentCount(post.id)
-        const qtyLikes = post.reactions.filter((reaction) => reaction.type === ReactionType.LIKE).length
-        const qtyRetweets = post.reactions.filter((reaction) => reaction.type === ReactionType.RETWEET).length
+    const extendedPosts = await Promise.all(posts.map(async post => {
+      const qtyComments = await this.getCommentCount(post.id)
+      const qtyLikes = post.reactions.filter(reaction => reaction.type === ReactionType.LIKE).length
+      const qtyRetweets = post.reactions.filter(reaction => reaction.type === ReactionType.RETWEET).length
 
-        return new ExtendedPostDTO({
-          id: post.id,
-          authorId: post.authorId,
-          content: post.content,
-          images: post.images,
-          createdAt: post.createdAt,
-          author: post.author,
-          qtyComments,
-          qtyLikes,
-          qtyRetweets
-        })
+      return new ExtendedPostDTO({
+        id: post.id,
+        authorId: post.authorId,
+        content: post.content,
+        images: post.images,
+        createdAt: post.createdAt,
+        author: post.author,
+        qtyComments,
+        qtyLikes,
+        qtyRetweets
       })
-    )
+    }))
 
     return extendedPosts
   }

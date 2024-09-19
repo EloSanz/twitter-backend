@@ -28,6 +28,8 @@ model User {
   reactions        Reaction[]
   sentMessages     Message[]  @relation("SentMessages")
   receivedMessages Message[]  @relation("ReceivedMessages")
+  chats            Chat[]     @relation("ChatUsers")
+
 }
 
 model Follow {
@@ -92,12 +94,21 @@ model Message {
   content    String
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
-  deletedAt DateTime?
+  deletedAt  DateTime?
   status     MessageStatus @default(SENT) // Status of the message
 
   sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
   receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  chat     Chat @relation("ChatMessages", fields: [chatId], references: [id])
+  chatId   String
 }
+
+model Chat {
+  id        String      @id @unique
+  users     User[]      @relation("ChatUsers")
+  messages  Message[]   @relation("ChatMessages")
+}
+
 
 enum MessageStatus {
   SENT

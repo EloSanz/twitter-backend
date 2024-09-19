@@ -1,6 +1,6 @@
 import { PrismaClient, Message } from '@prisma/client'
 import { MessageRepository } from './message.repository'
-import { CreateMessageDto, MessageStatus } from '../dto/messageDTO'
+import { ChatDTO, CreateMessageDto, MessageStatus } from '../dto/messageDTO'
 
 export class MessageRepositoryImpl implements MessageRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -20,7 +20,8 @@ export class MessageRepositoryImpl implements MessageRepository {
       data: {
         sender: { connect: { id: newMessage.senderId } },
         receiver: { connect: { id: newMessage.receiverId } },
-        content: newMessage.content
+        content: newMessage.content,
+        chat: { connect: { id: newMessage.chatId } }
       }
     })
     return message
@@ -71,5 +72,46 @@ export class MessageRepositoryImpl implements MessageRepository {
       where: { id },
       data: { status }
     })
+  }
+
+  private async roomExist (roomId: string): Promise<boolean> {
+    const room = await this.db.chat.findFirst({ where: { id: roomId } })
+    return room !== null
+  }
+
+  async createRoom (roomId: string, userId: string, receiverId: string): Promise<string> {
+    if (await this.roomExist(roomId)) {
+      console.log('exists')
+      return roomId
+    }
+
+    // Encontrar los usuarios a partir de sus IDs
+    const users = await this.db.user.findMany({
+      where: { id: { in: [userId, receiverId] } }
+    })
+
+    if (users.length !== 2) {
+      throw new Error('One or both users not found')
+    }
+
+    // Crear el chat y vincular los usuarios
+    await this.db.chat.create({
+      data: {
+        id: roomId,
+        users: {
+          connect: users.map((user) => ({ id: user.id })) // Conectar usuarios por ID
+        },
+        messages: {
+          create: [] // Crear el chat vacío, sin mensajes iniciales
+        }
+      }
+    })
+
+    return roomId
+  }
+
+  async getChats (userId: string): Promise<ChatDTO[]> {
+    //
+    return []
   }
 }

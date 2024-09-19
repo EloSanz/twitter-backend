@@ -318,7 +318,7 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
 
-  const post = await service.getPostByPostId(userId, postId)
+  const post = await service.getById(userId, postId)
   return res.status(HttpStatus.OK).json(post)
 })
 
