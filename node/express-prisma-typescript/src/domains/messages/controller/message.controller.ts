@@ -4,13 +4,20 @@ import { db } from '@utils'
 import { MessageServiceImpl } from '../service/message.service.impl'
 import HttpStatus from 'http-status'
 import { Message } from '@prisma/client'
+import { UserRepositoryImpl } from '@domains/user/repository'
 
-const service = new MessageServiceImpl(new MessageRepositoryImpl(db))
+const service = new MessageServiceImpl(new MessageRepositoryImpl(db), new UserRepositoryImpl(db))
 
 export const messageRouter = Router()
 
 messageRouter.get('/', async (req: Request, res: Response) => {
   const messages = await service.getMessages()
+
+  res.status(HttpStatus.OK).json(messages)
+})
+messageRouter.get('/chat', async (req: Request, res: Response) => {
+  const { senderId } = req.params
+  const messages = await service.getChats(senderId)
 
   res.status(HttpStatus.OK).json(messages)
 })

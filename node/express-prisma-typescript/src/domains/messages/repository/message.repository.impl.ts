@@ -1,6 +1,8 @@
 import { PrismaClient, Message } from '@prisma/client'
 import { MessageRepository } from './message.repository'
 import { ChatDTO, CreateMessageDto, MessageStatus } from '../dto/messageDTO'
+import { Author } from '@domains/user/dto'
+import { NotFoundException } from '@utils'
 
 export class MessageRepositoryImpl implements MessageRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -13,9 +15,25 @@ export class MessageRepositoryImpl implements MessageRepository {
   }
 
   async createMessage (newMessage: CreateMessageDto): Promise<Message> {
-    if (!newMessage.senderId || !newMessage.receiverId || !newMessage.content) {
+    if (!newMessage.senderId || !newMessage.receiverId || !newMessage.content || !newMessage.chatId) {
       throw new Error('Missing required fields')
     }
+
+    const sender = await this.db.user.findUnique({ where: { id: newMessage.senderId } })
+    if (!sender) {
+      throw new Error(`Sender with ID ${newMessage.senderId} does not exist`)
+    }
+
+    const receiver = await this.db.user.findUnique({ where: { id: newMessage.receiverId } })
+    if (!receiver) {
+      throw new Error(`Receiver with ID ${newMessage.receiverId} does not exist`)
+    }
+
+    const chat = await this.db.chat.findUnique({ where: { id: newMessage.chatId } })
+    if (!chat) {
+      throw new Error(`Chat with ID ${newMessage.chatId} does not exist`)
+    }
+
     const message = await this.db.message.create({
       data: {
         sender: { connect: { id: newMessage.senderId } },
@@ -24,6 +42,7 @@ export class MessageRepositoryImpl implements MessageRepository {
         chat: { connect: { id: newMessage.chatId } }
       }
     })
+
     return message
   }
 
@@ -84,8 +103,6 @@ export class MessageRepositoryImpl implements MessageRepository {
       console.log('exists')
       return roomId
     }
-
-    // Encontrar los usuarios a partir de sus IDs
     const users = await this.db.user.findMany({
       where: { id: { in: [userId, receiverId] } }
     })
@@ -110,8 +127,69 @@ export class MessageRepositoryImpl implements MessageRepository {
     return roomId
   }
 
+  async getAuthor (userId: string): Promise<Author> {
+    const user = await this.db.user.findUnique({ where: { id: userId } })
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`)
+    }
+
+    return new Author({
+      id: user.id,
+      name: user.name ?? undefined,
+      username: user.username,
+      profilePicture: user.profilePicture ?? undefined,
+      private: user.private,
+      createdAt: user.createdAt
+    })
+  }
+
   async getChats (userId: string): Promise<ChatDTO[]> {
-    //
-    return []
+    const chats = await this.db.chat.findMany({
+      where: {
+        users: {
+          some: { id: userId }
+        }
+      },
+      include: {
+        users: true,
+        messages: {
+          include: {
+            sender: true
+          }
+        }
+      }
+    })
+
+    const chatDTOs = await Promise.all(chats.map(async (chat) => {
+      const usersMapped = await Promise.all(chat.users.map(async (user) => {
+        return await this.getAuthor(user.id)
+      }))
+
+      const messagesMapped = chat.messages.map((message) => {
+        return {
+          id: message.id.toString(),
+          content: message.content,
+          createdAt: message.createdAt,
+          chatId: message.chatId,
+          senderId: message.senderId,
+          sender: new Author({
+            id: message.sender.id,
+            name: message.sender.name ?? undefined,
+            username: message.sender.username,
+            profilePicture: message.sender.profilePicture ?? undefined,
+            private: message.sender.private,
+            createdAt: message.sender.createdAt
+          })
+        }
+      })
+
+      return {
+        id: chat.id,
+        users: usersMapped,
+        messages: messagesMapped
+      }
+    }))
+    return chatDTOs
   }
 }

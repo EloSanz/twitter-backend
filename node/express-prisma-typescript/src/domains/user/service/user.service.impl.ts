@@ -1,6 +1,6 @@
 import { ConflictException, NotFoundException } from '@utils/errors'
 import { OffsetPagination } from 'types'
-import { UserProfile, UserViewDTO } from '../dto'
+import { Author, UserProfile, UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
 import { UserService } from './user.service'
 import { ImageService } from './image.service'
@@ -87,5 +87,11 @@ export class UserServiceImpl implements UserService {
     const user: boolean = await this.repository.existById(userId)
     if (!user) throw new NotFoundException('user')
     return await this.repository.getUserProfile(userId)
+  }
+
+  async getAuthor (userId: string): Promise<Author> {
+    const user: boolean = await this.repository.existById(userId)
+    if (!user) throw new NotFoundException('user')
+    return await this.repository.getAuthor(userId)
   }
 }

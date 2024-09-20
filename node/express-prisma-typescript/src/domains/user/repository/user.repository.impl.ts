@@ -6,6 +6,7 @@ import { Author, ExtendedUserDTO, UserDTO, UserProfile, UserViewDTO } from '../d
 import { UserRepository } from './user.repository'
 import { Post } from '@domains/post/dto'
 import { Reaction } from '@domains/reaction/dto/reactionDto'
+import { NotFoundException } from '@utils'
 
 export class UserRepositoryImpl implements UserRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -278,5 +279,22 @@ export class UserRepositoryImpl implements UserRepository {
       followers: user.followers?.map((follower: any) => new Author(follower.follower)) ?? [],
       following: user.follows?.map((followed: any) => new Author(followed.followed)) ?? []
     }
+  }
+
+  async getAuthor (userId: string): Promise<Author> {
+    const user = await this.db.user.findUnique({ where: { id: userId } })
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`)
+    }
+
+    return new Author({
+      id: user.id,
+      name: user.name ?? undefined,
+      username: user.username,
+      profilePicture: user.profilePicture ?? undefined,
+      private: user.private,
+      createdAt: user.createdAt
+    })
   }
 }

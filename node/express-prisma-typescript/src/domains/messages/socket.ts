@@ -10,8 +10,9 @@ import { MessageRepositoryImpl } from '@domains/messages/repository/message.repo
 import { CreateMessageDto, JoinRoomPayload } from '@domains/messages/dto/messageDTO'
 import { SendMessagePayload } from '@domains/messages/chatClient'
 import { Message } from '@prisma/client'
+import { UserRepositoryImpl } from '@domains/user/repository'
 
-const messageService: MessageService = new MessageServiceImpl(new MessageRepositoryImpl(db))
+const messageService: MessageService = new MessageServiceImpl(new MessageRepositoryImpl(db), new UserRepositoryImpl(db))
 
 export const setupSocketIO = (server: http.Server): Server => {
   const io = new Server(server, {
@@ -62,8 +63,8 @@ export const setupSocketIO = (server: http.Server): Server => {
         const chatId: string = await messageService.createRoom(roomId, senderId, receiverId)
         await socket.join(roomId)
 
-        // const messages: Message[] = await messageService.getMessagesBetweenUsers(senderId, receiverId)
-        // socket.emit('previousMessages', messages)
+        const messages: Message[] = await messageService.getMessagesBetweenUsers(senderId, receiverId)
+        socket.emit('previousMessages', messages)
 
         console.log(`User ${senderId} joined chat with ${receiverId}`)
       } catch (error) {

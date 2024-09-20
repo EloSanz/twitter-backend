@@ -294,7 +294,7 @@ import { UserService, UserServiceImpl } from '../service'
 import { ImageService } from '../service/image.service'
 import multer from 'multer'
 import { FollowerRepositoryImpl } from '@domains/follower/repository/follower.repository.impl'
-import { UserProfile, UserViewDTO } from '../dto'
+import { Author, UserProfile, UserViewDTO } from '../dto'
 
 export const userRouter = Router()
 const upload = multer({ storage: multer.memoryStorage() })
@@ -324,6 +324,12 @@ userRouter.get('/profile-picture', async (req: Request, res: Response) => {
   if (!url) { return res.status(HttpStatus.NOT_FOUND).json({ message: 'Profile picture not found' }) }
 
   res.status(HttpStatus.OK).json({ url })
+})
+userRouter.get('/author/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params
+  const user: Author | null = await service.getAuthor(userId)
+
+  return res.status(HttpStatus.OK).json(user)
 })
 
 userRouter.get('/generate-upload-url', async (req: Request, res: Response) => {

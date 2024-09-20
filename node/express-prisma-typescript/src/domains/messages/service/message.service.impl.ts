@@ -2,9 +2,10 @@ import { Message } from '@prisma/client'
 import { MessageRepositoryImpl } from '../repository/message.repository.impl'
 import { MessageService } from './message.service'
 import { ChatDTO, CreateMessageDto, MessageStatus } from '../dto/messageDTO'
+import { UserRepositoryImpl } from '@domains/user/repository'
 
 export class MessageServiceImpl implements MessageService {
-  constructor (private readonly messageRepo: MessageRepositoryImpl) {}
+  constructor (private readonly messageRepo: MessageRepositoryImpl, private readonly userRepo: UserRepositoryImpl) {}
 
   async createMessage (newMessage: CreateMessageDto): Promise<Message> {
     return await this.messageRepo.createMessage(newMessage)

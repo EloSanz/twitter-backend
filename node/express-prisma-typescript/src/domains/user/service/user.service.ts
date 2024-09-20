@@ -1,5 +1,5 @@
 import { OffsetPagination } from '@types'
-import { UserProfile, UserViewDTO } from '../dto'
+import { Author, UserProfile, UserViewDTO } from '../dto'
 
 export interface UserService {
   softDeleteUser: (userId: string) => Promise<void>
@@ -18,4 +18,5 @@ export interface UserService {
   deleteUser: (userId: string) => Promise<void>
   /// ///////////////////////////////////////////
   getUserProfile: (userId: string) => Promise<UserProfile>
+  getAuthor: (userId: string) => Promise<Author>
 }

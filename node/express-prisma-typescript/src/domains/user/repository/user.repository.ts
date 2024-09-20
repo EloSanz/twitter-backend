@@ -1,6 +1,6 @@
 import { SignupInputDTO } from '@domains/auth/dto'
 import { OffsetPagination } from '@types'
-import { ExtendedUserDTO, UserDTO, UserProfile, UserViewDTO } from '../dto'
+import { Author, ExtendedUserDTO, UserDTO, UserProfile, UserViewDTO } from '../dto'
 
 export interface UserRepository {
   create: (data: SignupInputDTO) => Promise<UserDTO>
@@ -20,4 +20,5 @@ export interface UserRepository {
   existById: (userId: string) => Promise<boolean>
   /// ///////////////////////////////////////////
   getUserProfile: (userId: string) => Promise<UserProfile>
+  getAuthor: (userId: string) => Promise<Author>
 }
