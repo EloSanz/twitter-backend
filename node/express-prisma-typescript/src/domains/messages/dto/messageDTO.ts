@@ -17,7 +17,7 @@ export interface UpdateMessageStatusDto {
   status: MessageStatus
 }
 export interface JoinRoomPayload {
-  receiverId: string
+  roomId: string
 }
 export enum MessageStatus {
   SENT = 'SENT',

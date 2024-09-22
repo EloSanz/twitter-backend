@@ -46,19 +46,13 @@ export class MessageRepositoryImpl implements MessageRepository {
     return message
   }
 
-  async getMessagesBetweenUsers (senderId: string, receiverId: string): Promise<Message[]> {
-    return await this.db.message.findMany({
-      where: {
-        OR: [
-          { senderId, receiverId },
-          { senderId: receiverId, receiverId: senderId }
-        ],
-        deletedAt: null
-      },
-      orderBy: {
-        createdAt: 'asc'
-      }
+  async getMessagesBetweenUsers (roomId: string): Promise<Message[]> {
+    const chat = await this.db.chat.findUnique({
+      where: { id: roomId },
+      include: { messages: true }
     })
+    const messages = chat?.messages ?? []
+    return messages
   }
 
   async getMessages (): Promise<Message[]> {
@@ -191,5 +185,53 @@ export class MessageRepositoryImpl implements MessageRepository {
       }
     }))
     return chatDTOs
+  }
+
+  async getChatById (chatId: string): Promise<ChatDTO> {
+    const chat = await this.db.chat.findUnique({
+      where: { id: chatId },
+      include: {
+        users: true,
+        messages: {
+          include: {
+            sender: true
+          }
+        }
+      }
+    })
+
+    if (!chat) {
+      throw new NotFoundException(`Chat with ID ${chatId} not found`)
+    }
+
+    const usersMapped = await Promise.all(
+      chat.users.map(async (user) => {
+        return await this.getAuthor(user.id)
+      })
+    )
+
+    const messagesMapped = chat.messages.map((message) => {
+      return {
+        id: message.id.toString(),
+        content: message.content,
+        createdAt: message.createdAt,
+        chatId: message.chatId,
+        senderId: message.senderId,
+        sender: new Author({
+          id: message.sender.id,
+          name: message.sender.name ?? undefined,
+          username: message.sender.username,
+          profilePicture: message.sender.profilePicture ?? undefined,
+          private: message.sender.private,
+          createdAt: message.sender.createdAt
+        })
+      }
+    })
+
+    return {
+      id: chat.id,
+      users: usersMapped,
+      messages: messagesMapped
+    }
   }
 }

@@ -13,8 +13,8 @@ export interface SendMessagePayload {
 function sendMessage ({ receiverId, content }: SendMessagePayload): void {
   socket.emit('sendMessage', { receiverId, content })
 }
-function joinRoom (receiverId: string): void {
-  socket.emit('joinRoom', { receiverId })
+function joinRoom (roomId: string): void {
+  socket.emit('joinRoom', { roomId })
 }
 
 socket.on('message', (messageData: CreateMessageDto) => {

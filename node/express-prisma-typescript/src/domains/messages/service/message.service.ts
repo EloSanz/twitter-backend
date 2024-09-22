@@ -10,6 +10,6 @@ export interface MessageService {
   deleteMessage: (id: number) => Promise<void>
   softDeleteMessage: (id: number) => Promise<void>
   updateMessageStatus: (id: number, status: MessageStatus) => Promise<Message>
-  getMessagesBetweenUsers: (senderId: string, receiverId: string) => Promise<Message[]>
+  getMessagesBetweenUsers: (roomId: string) => Promise<Message[]>
   getChats: (userId: string) => Promise<ChatDTO[]>
 }

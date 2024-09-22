@@ -44,31 +44,15 @@ export const setupSocketIO = (server: http.Server): Server => {
   io.on('connection', (socket: Socket) => {
     console.log('User connected: ', socket.data.userId)
 
-    socket.on('joinRoom', async ({ receiverId }: JoinRoomPayload) => {
-      const senderId = socket.data.userId
+    socket.on('joinRoom', async ({ roomId }: JoinRoomPayload) => {
+      console.log('User joined room ', roomId)
 
-      if (!senderId || !receiverId) {
-        console.error('Sender ID and Receiver ID are required')
-        return
-      }
-
+      await socket.join(roomId)
       try {
-        const followStatus: boolean = await messageService.checkFollowStatus(senderId, receiverId)
-        if (followStatus) {
-          socket.emit('error', 'You can only chat if you follow each other.')
-          return
-        }
-
-        const roomId = getRoomId(senderId, receiverId)
-        const chatId: string = await messageService.createRoom(roomId, senderId, receiverId)
-        await socket.join(roomId)
-
-        const messages: Message[] = await messageService.getMessagesBetweenUsers(senderId, receiverId)
+        const messages = await messageService.getMessagesBetweenUsers(roomId)
         socket.emit('previousMessages', messages)
-
-        console.log(`User ${senderId} joined chat with ${receiverId}`)
       } catch (error) {
-        console.error('Error joining room or fetching messages:', error)
+        console.error('Error fetching messages:', error)
       }
     })
 
@@ -76,15 +60,19 @@ export const setupSocketIO = (server: http.Server): Server => {
       const senderId = socket.data.userId
       const chatId = getRoomId(senderId, receiverId)
 
-      const messageData: CreateMessageDto = new CreateMessageDto(senderId, receiverId, content, chatId)
-
       try {
+        const messageData: CreateMessageDto = {
+          senderId,
+          receiverId,
+          content,
+          chatId
+        }
+
         const message = await messageService.createMessage(messageData)
 
-        const receiverSocket = userSockets.get(receiverId)
-        if (receiverSocket) { receiverSocket.emit('message', { senderId, content }) }
-
-        // console.log('Message saved and sent:', message)
+        // Envía el mensaje solo a los participantes de la sala
+        io.to(chatId).emit('message', message)
+        console.log(message)
       } catch (error) {
         console.error('Error sending message:', error)
       }
@@ -96,7 +84,6 @@ export const setupSocketIO = (server: http.Server): Server => {
 
     socket.on('disconnect', () => {
       console.log('User disconnected:', socket.data.userId)
-      userSockets.delete(socket.data.userId)
     })
   })
 

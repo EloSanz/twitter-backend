@@ -10,14 +10,15 @@ const service = new MessageServiceImpl(new MessageRepositoryImpl(db), new UserRe
 
 export const messageRouter = Router()
 
+messageRouter.get('/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params
+  const chats = await service.getChats(userId)
+
+  res.status(HttpStatus.OK).json(chats)
+})
+
 messageRouter.get('/', async (req: Request, res: Response) => {
   const messages = await service.getMessages()
-
-  res.status(HttpStatus.OK).json(messages)
-})
-messageRouter.get('/chat', async (req: Request, res: Response) => {
-  const { senderId } = req.params
-  const messages = await service.getChats(senderId)
 
   res.status(HttpStatus.OK).json(messages)
 })

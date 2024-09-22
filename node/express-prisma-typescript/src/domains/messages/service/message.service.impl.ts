@@ -31,8 +31,8 @@ export class MessageServiceImpl implements MessageService {
     return await this.messageRepo.updateMessageStatus(id, status)
   }
 
-  async getMessagesBetweenUsers (senderId: string, receiverId: string): Promise<Message[]> {
-    return await this.messageRepo.getMessagesBetweenUsers(senderId, receiverId)
+  async getMessagesBetweenUsers (roomId: string): Promise<Message[]> {
+    return await this.messageRepo.getMessagesBetweenUsers(roomId)
   }
 
   async checkFollowStatus (senderId: string, receiverId: string): Promise<boolean> {
